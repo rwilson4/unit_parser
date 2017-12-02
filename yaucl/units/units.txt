@@ -1,0 +1,151 @@
+# Dimensionless units
+unitless: [0 0 0 0 0]
+kilo: 1000 unitless
+centi: 0.01 unitless
+milli: 0.001 unitless
+micro: 0.001 milli
+nano: 0.001 micro
+
+# Time units
+second: [0 0 1 0 0]
+seconds: 1 second
+sec: 1 second
+
+minute: 60 seconds
+minutes: 1 minute
+min: 1 minute
+
+hour: 60 minutes
+hours: 1 hour
+hr: 1 hour
+
+day: 24 hours
+days: 1 day
+siderealDay: 86164.0916 seconds
+
+week: 7 days
+weeks: 1 week
+
+fortnight: 2 weeks
+fortnights: 1 fortnight
+
+year: 365 days
+years: 1 year
+
+# Length units
+meter: [1 0 0 0 0]
+meters: 1 meter
+m: 1 meter
+
+kilometer: 1 kilo_meter
+kilometers: 1 kilometer
+km: 1 kilometer
+
+centimeter: 1 centi_meter
+centimeters: 1 centimeter
+cm: 1 centimeter
+
+millimeter: 1 milli_meter
+millimeters: 1 millimeter
+mm: 1 millimeter
+
+inch: 2.54 centimeters
+inches: 1 inch
+
+foot: 12 inches
+feet: 1 foot
+ft: 1 foot
+
+yard: 3 feet
+yards: 1 yard
+
+mile: 5280 feet
+miles: 1 mile
+
+nauticalMile: 1.852 kilometers
+nauticalMiles: 1 nauticalMile
+nmi: 1 nauticalMile
+
+lightSecond: 299792458 meters
+lightSeconds: 1 lightSecond
+lightDay: 86400 lightSeconds
+lightYear: 365.25 lightDay
+lightYears: 1 lightYear
+parsec: 3.26163344 lightYears
+
+# Mass units
+kilogram: [0 1 0 0 0]
+kilograms: 1 kilogram
+kg: 1 kilogram
+gram: 0.001 kilogram
+
+pound: 0.45359237 kilograms
+pounds: 1 pound
+lbm: 1 pound
+
+ounce: 0.0625 pounds
+ounces: 1 ounce
+oz: 1 ounce
+
+# Volume units
+milliliter: 1 centimeter_cubed
+milliliters: 1 milliliter
+ml: 1 milliliter
+
+liter: 1000 milliliters
+liters: 1 liter
+
+gallon: 231 inches_cubed
+gallons: 1 gallon
+gal: 1 gallon
+
+quart: 0.25 gallons
+quarts: 1 quart
+
+pint: 0.5 quarts
+pints: 1 pint
+
+cup: 0.5 pints
+cups: 1 cup
+
+fluidOunce: 0.125 cups
+fluidOunces: 1 fluidOunce
+
+tablespoon: 0.5 fluidOunces
+tablespoons: 1 tablespoon
+tbsp: 1 tablespoon
+
+teaspoon: 0.3333333 tablespoons
+teaspoons: 1 teaspoon
+tsp: 1 teaspoon
+
+# Temperature units
+degC: [0 0 0 1 0]
+degF: 0.5555555555555 degC
+
+# Derived units
+newton: 1 kilogram_meter_per_second_squared
+newtons: 1 newton
+
+joule: 1 newton_meter
+joules: 1 joule
+calorie: 4.184 joule
+calories: 1 calorie
+
+watt: 1 joule_per_second
+watts: 1 watt
+
+# Pressure
+pascal: 1 newton_per_meter_squared
+kpa: 1 kilo_pascal
+bar: 100 kpa
+atmosphere: 101.325 kpa
+atm: 1 atmosphere
+psi: 1 pound_per_inch_squared
+
+# Electromagnetic units
+coulomb: [0 0 0 0 1]
+ampere: 1 coulomb_per_second
+volt: 1 newton_meter_per_coulomb
+tesla: 1 volt_second_per_meter_squared
+gauss: 0.0001 tesla
