@@ -1,144 +1,190 @@
-#!/usr/bin/python
-
-# SYNTAX
-#   parseUnitFile(file)
-# DESCRIPTION
-#   This function reads a file defining the various units that may be used.
-# INPUTS
-#   file      File defining units. The file must have a specific format, as
-#             described below.
-# FILE FORMAT
-#   The definition file consists of unit definitions, and possibly white
-#   space and comments. Unit definitions are not allowed to span lines, but
-#   are otherwise unaffected by whitespace. There are two types of
-#   definitions: fundamental and derived. A fundamental definition merely
-#   specifies the signature of the unit. The quantity is required to be
-#   unity. For definitions and examples of signature and quantity, see the
-#   comments in convertUnits.m.
-#
-#   Here is an example of a fundamental definition:
-#      second  : [0 0 1]
-#   The name of the unit comes first, then a semicolon, then a row vector
-#   specifying the signature. The unit name is restricted to contain only
-#   alphabetic characters (a through z), and is case insensitive. The row
-#   vector uses standard Matlab notation, delimited by square brackets,
-#   with entries separated by spaces. A single comma is permitted and
-#   equivalent to a space. For example, [0, 0 1] is equivalent to the above
-#   example, but [0,, 0 1] is invalid, just as it would be in Matlab.
-#
-#   Here is an example of a derived definition:
-#      minute: 60 second
-#   Derived units are multiples of previously defined units.
-#
-#   Certain combinations of units are automatically recognized, as
-#   discussed in the comments in convertUnits.m. For example, consider the
-#   following derived definition:
-#      newton: 1 kilogram_meter_per_second_squared.
-#   Provided kilogram, meter, and second had previously been defined, the
-#   code automatically recognizes this sort of expression for what it is.
-#   Note that 'per', 'squared', and 'cubed' are reserved keywords that
-#   cannot be the names of units.
-
 import re
-import sys
 
 class units:
+    """Yet Another Unit Conversion Library
+
+    This library allows for converting between units. Perhaps its most
+    interesting feature is its flexible unit specification
+    parsing. Units may be specified by a definition file which
+    accompanies this library, or by combinations of units defined in
+    that file.
+
+    For example, if 'second', 'meter', and 'kilogram' are defined by
+    the file, the specification 'kilogram_meter_per_second_squared' is
+    valid and parsed as expected. These compound specifications
+    consist of tokens separated by underscores. Tokens include
+    previously defined units like 'kilogram' as well as the special
+    keywords 'per', 'squared', and 'cubed'.
+
+    The keyword 'per' may be used at most once per specification and
+    directs that all subsequent tokens belong in the denominator of
+    the unit.
+
+    The keywords 'squared' and 'cubed' indicate that the preceding
+    token should be repeated once or twice more, respectively. They
+    cannot be daisy chained, for example: 'meters_squared_squared' is
+    not permitted, but 'meters_squared_meters_squared' or
+    'meters_cubed_meters' would be. They also only apply to the
+    preceding token, so 'second_second_meter_meter' is equivalent to
+    'second_squared_meter_squared' but not 'second_meter_squared'.
+
+    Finally, 'second', 'seconds', and 'sec' are not automatically
+    treated as equivalent units, but the unit definition file can and
+    does create these as if they were aliases. For example, 'seconds'
+    is defined as '1 second'.
+
+    """
     def __init__(self):
-        self.units = {}
-        self.sigLen = -1
-    
-    def signatureAndQuantityForUnit(self, unit):
-        if unit in self.units:
-            return self.units[unit]
-        else:
-            # Parse string
-            tokens = unit.split('_')
-            signature = [0] * self.sigLen
-            thisSignature = [0] * self.sigLen
-            quantity = 1
-            thisQuantity = 1
-            numFlag = True
-            wasUnit = False
+        self._units = {}
+        self._sig_len = -1
 
-            for token in tokens:
-                if token == 'per':
-                    wasUnit = False
-                    numFlag = False
-                elif (token == 'squared' or token == 'cubed'):
-                    if wasUnit:
-                        # Previous token was a unit, so squared and cubed
-                        # are valid modifiers. More importantly,
-                        # thisSignature and thisQuantity are still
-                        # applicable.
-                        if token == 'cubed':
-                            for si in (range(len(thisSignature))):
-                                thisSignature[si] *= 2
-                                
-                            thisQuantity *= thisQuantity
+    def _signature_and_quantity_for_unit(self, unit):
+        """Parse physical quantity.
 
-                        if numFlag:
-                            for si in (range(len(thisSignature))):
-                                signature[si] += thisSignature[si]
-                                
-                            quantity *= thisQuantity
-                        else:
-                            for si in (range(len(thisSignature))):
-                                signature[si] -= thisSignature[si]
-                                
-                            quantity /= thisQuantity
+        Parameters
+        ----------
+        unit : str
+            String representing a physical quanitity, like
+            "9.81 meters_per_second_squared"
 
-                        wasUnit = False
-                    else:
-                        print('Invalid use of keyword {0:s}.'.format(token))
-                        sys.exit()
-                elif token in self.units:
-                    thisSignature = list(self.units[token]['signature'])
-                    thisQuantity = self.units[token]['quantity']
+        Returns
+        -------
+        signature : array_like
+            The signature of the unit (a vector with non-negative
+            integer values).
+        quantity : float
+            The quantity associated with the unit.
 
-                    if numFlag:
-                        for si in (range(len(thisSignature))):
-                            signature[si] += thisSignature[si]
+        """
 
-                        quantity *= thisQuantity
-                    else:
-                        for si in (range(len(thisSignature))):
-                            signature[si] -= thisSignature[si]
+        if unit in self._units:
+            return self._units[unit]
 
-                        quantity /= thisQuantity
+        # Parse string
+        tokens = unit.split('_')
+        signature = [0] * self._sig_len
+        sig_buffer = [0] * self._sig_len
+        quantity = 1
+        quantity_buffer = 1
+        in_numerator = True
+        was_unit = False
 
-                    wasUnit = True
+        for token in tokens:
+            if token == 'per':
+                if not in_numerator:
+                    raise SyntaxError("Multiple uses of keyword 'per' not allowed")
+                in_numerator = False
+                was_unit = False
+            elif (token == 'squared' or token == 'cubed'):
+                if not was_unit:
+                    # Can't do 'per_squared' or 'cubed_squared' or even 'squared_meters'
+                    raise SyntaxError('Invalid use of keyword {0:s}.'.format(token))
+
+                # Previous token was a unit, so squared and cubed are
+                # valid modifiers. The modifiers are applied to the
+                # contents of sig_buffer and quantity_buffer.
+                if token == 'cubed':
+                    for si in range(self._sig_len):
+                        sig_buffer[si] *= 2
+
+                    quantity_buffer *= quantity_buffer
+
+                if in_numerator:
+                    for si in range(self._sig_len):
+                        signature[si] += sig_buffer[si]
+
+                    quantity *= quantity_buffer
                 else:
-                    print('Unit not recognized: {0:s}'.format(token))
-                    sys.exit()
+                    for si in range(self._sig_len):
+                        signature[si] -= sig_buffer[si]
 
-            return {'signature': signature, 'quantity': quantity}
+                    quantity /= quantity_buffer
 
-    def parseUnitFile(self, file):
+                was_unit = False
+            elif token in self._units:
+                sig_buffer = self._units[token]['signature']
+                quantity_buffer = self._units[token]['quantity']
+
+                if in_numerator:
+                    for si in range(self._sig_len):
+                        signature[si] += sig_buffer[si]
+
+                    quantity *= quantity_buffer
+                else:
+                    for si in range(self._sig_len):
+                        signature[si] -= sig_buffer[si]
+
+                    quantity /= quantity_buffer
+
+                was_unit = True
+            else:
+                raise SyntaxError('Unit not recognized: {0:s}'.format(token))
+
+        return signature, quantity
+
+    def _parse_unit_file(self, file):
+        """Parse Unit Definition File
+
+        Parameters
+        ----------
+        file : str
+            Location of unit definitions (see Syntax).
+
+        Returns
+        -------
+        (nothing)
+
+        Syntax
+        ------
+
+        The Unit Definition File consists of unit definitions and
+        potentially comments. A comment starts with a # and can be on
+        the same line as a unit specification, or on a line of its
+        own. White space is ignored, but each unit specification must
+        be on its own line.
+
+        Units can either be specified by a vector representing its
+        dimensional signature, or in terms of other units. Defining a
+        unit by its dimensional signature looks like this:
+           second: [1 0 0]
+        This fairly meaninglessly defines a second as having that
+        signature, with an implicit quantity of 1. Units defined in
+        terms of their dimensional signatures can be used as a
+        foundation to defined other units. For example, let's
+        additionally define:
+           meter: [0 1 0]
+           kilogram: [0 0 1]
+           newton: kilogram_meter_per_second_squared
+        We have now seen our first unit definition in terms of other
+        units. The syntax of unit specifications is described in the
+        class documentation.
+
+        """
         ## Regular expressions
         # This regular expression represents a line that contains nothing but
         # comments or spaces. Examples:
         # # This is a comment!
         #             # This is also a comment!
-        emptyLineRE = '(^\s*(#.*)?$)'
+        empty_line_re = '(^\s*(#.*)?$)'
 
-        unitRE = '[a-zA-Z]+'
-        compositeUnitRE = '[a-zA-Z_]+'
+        unit_re = '[a-zA-Z]+'
+        composite_unit_re = '[a-zA-Z_]+'
 
         # This regular expression matches a double.
         # Source: http://www.regular-expressions.info/floatingpoint.html
-        doubleRE = '[-+]?[0-9]*\.?[0-9]+'
+        double_re = '[-+]?[0-9]*\.?[0-9]+'
 
         # This regular expression represents a row vector, using Matlab notation.
         # Examples:
         # [1,1]
         # [ 1 , 1, 2.3 ]
-        vectorRE = '\[\s*((\s*' + doubleRE + '\s*,?)*\s*(' + doubleRE + '))\s*\]'
+        vector_re = '\[\s*((\s*' + double_re + '\s*,?)*\s*(' + double_re + '))\s*\]'
 
         # This regular expression represents a physical quantity. Examples:
         #   1 day
         #   60 seconds
-        physicalQuantityRE = doubleRE + '\s*' + compositeUnitRE
-        physicalQuantityRENames = '(' + doubleRE + ')\s*(' + compositeUnitRE + ')'
+        physical_quantity_re = double_re + '\s*' + composite_unit_re
+        physical_quantity_re_with_names = '(' + double_re + ')\s*(' + composite_unit_re + ')'
 
         # This regular expression represents a unit specification.
         # Example:
@@ -151,75 +197,99 @@ class units:
         # Resulting tokens:
         #  token.key = 'minute'
         #  token.value = '60 seconds'
-        keyValueRE = '^\s*(' + unitRE + ')\s*:\s*(' + vectorRE + '|' + physicalQuantityRE + ')\s*(#.*)?$'
+        key_value_re = '^\s*(' + unit_re + ')\s*:\s*(' + vector_re + '|' + physical_quantity_re + ')\s*(#.*)?$'
 
         ## Parse file
         with open(file, 'r') as f:
-            lineNumber = 0
+            line_number = 0
             for line in f:
-                lineNumber += 1
+                line_number += 1
 
-                if re.match(emptyLineRE, line):
+                if re.match(empty_line_re, line):
                     # This line is a comment
                     continue
 
-                matchRes = re.match(keyValueRE, line)
+                result = re.match(key_value_re, line)
 
-                if not matchRes:
-                    print('parseUnitFile:syntaxError')
-                    sys.exit()
+                if not result:
+                    msg = 'Syntax error on line: {0:d}:'
+                    raise SyntaxError(msg.format(line_number))
 
-                unitName = matchRes.group(1)
-                definition = matchRes.group(2)
+                unit_name = result.group(1)
+                definition = result.group(2)
 
-                if unitName in self.units:
-                    print('Unit {0:s} has already been specified.'.format(unitName))
-                    sys.exit()
+                if unit_name in self.units:
+                    msg = 'Syntax error on line: {0:d}:'
+                    msg += ' Unit {1:s} has already been specified.'
+                    raise SyntaxError(msg.format(line_number, unit_name))
 
-                if not re.match('^[a-zA-Z]+$', unitName):
-                    print('Unit names may contain only alphabetic characters')
-                    sys.exit()
+                if not re.match('^[a-zA-Z]+$', unit_name):
+                    msg = 'Syntax error on line: {0:d}:'
+                    msg += ' Unit names may contain only alphabetic characters'
+                    raise SyntaxError(msg.format(line_number))
 
-                vecRes = re.match(vectorRE, definition)
-                if vecRes:
+                defined_by_signature = re.match(vector_re, definition)
+                if defined_by_signature:
                     # Unit is specified by signature; in this case,
                     # quantity is by definition unity.
-                    sig = re.compile(',|\s+,?\s*').split(vecRes.group(1))
+                    sig = re.compile(',|\s+,?\s*').split(defined_by_signature.group(1))
                     for isig in range(len(sig)):
-                        sig[isig] = float(sig[isig])
+                        sig[isig] = int(sig[isig])
 
-                    sigLen = len(sig)
-                    if (self.sigLen == -1):
-                        self.sigLen = sigLen
-                    else:
-                        if (sigLen != self.sigLen):
-                            print('Signature length inconsistent with previous units.')
-                            sys.exit()
+                    sig_len = len(sig)
+                    if (self._sig_len == -1):
+                        self._sig_len = sig_len
+                    elif sig_len != self._sig_len:
+                        msg = 'Syntax error on line: {0:d}:'
+                        msg += ' Signature length inconsistent with previous units.'
+                        raise SyntaxError(msg.format(line_number))
 
-                    self.units[unitName] = {'signature': sig, 'quantity': 1}
+                    self.units[unit_name] = {'signature': sig, 'quantity': 1}
                 else:
-                    parseRes = re.match(physicalQuantityRENames, definition)
-                    if parseRes:
-                        thisQuantity = float(parseRes.group(1))
-                        unit = parseRes.group(2)
+                    result = re.match(physical_quantity_re_with_names, definition)
+                    if result:
+                        this_quantity = float(result.group(1))
+                        unit = result.group(2)
 
-                        if (thisQuantity <= 0):
-                            print('Quantity must be strictly positive.')
-                            sys.exit()
+                        if (this_quantity <= 0):
+                            raise SyntaxError('Quantity must be strictly positive.')
 
-                        saq = self.signatureAndQuantityForUnit(unit)
-                        sig = list(saq['signature'])
-                        quantity = thisQuantity * saq['quantity']
-                        self.units[unitName] = {'signature': sig, 'quantity': quantity}
+                        sig, quantity = self._signature_and_quantity_for_unit(unit)
+                        self._units[unit_name] = {'signature': sig,
+                                                  'quantity': (quantity * this_quantity)}
 
 
-    def convertUnits(self, quantity, fU, tU):
-        fsaq = self.signatureAndQuantityForUnit(fU)
-        tsaq = self.signatureAndQuantityForUnit(tU)
+    def convert(self, quantity, given_units, desired_units):
+        """Convert from one unit to another.
 
-        for (fi, ti) in zip(fsaq['signature'], tsaq['signature']):
+        Parameters
+        ----------
+        quantity : numeric
+           Quantity to be converted.
+        given_units : str
+           String corresponding to a unit specification, like "feet_squared",
+           representing the units associated with quantity.
+        desired_units : str
+           String corresponding to a unit specification, representing the
+           desired units.
+
+        Returns
+        -------
+        quantity : numeric
+           The input quantity converted to the desired units.
+
+        Usage
+        -----
+        To convert 5 feet into meters, do:
+         > convert(5, 'feet', 'meters')
+
+        """
+
+        given_sig, given_quant = self._signature_and_quantity_for_unit(given_units)
+        des_sig, des_quant = self._signature_and_quantity_for_unit(desired_units)
+
+        for (fi, ti) in zip(given_sig, des_sig):
             if fi != ti:
-                print('Units not compatible.')
-                sys.exit()
+                raise ValueError('Units not compatible.')
 
-        return quantity * fsaq['quantity'] / tsaq['quantity']
+        return quantity * given_quant / des_quant
