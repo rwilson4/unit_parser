@@ -34,9 +34,13 @@ class units:
     is defined as '1 second'.
 
     """
-    def __init__(self):
+    def __init__(self, unit_definitions=None):
         self._units = {}
         self._sig_len = -1
+        if unit_definitions is not None:
+            self._parse_unit_file(unit_definitions)
+        else:
+            self._parse_unit_file('units/units.txt')
 
     def _signature_and_quantity_for_unit(self, unit):
         """Parse physical quantity.
@@ -58,7 +62,8 @@ class units:
         """
 
         if unit in self._units:
-            return self._units[unit]
+            return {'signature': list(self._units[unit]['signature']),
+                    'quantity': self._units[unit]['quantity']}
 
         # Parse string
         tokens = unit.split('_')
@@ -102,7 +107,7 @@ class units:
 
                 was_unit = False
             elif token in self._units:
-                sig_buffer = self._units[token]['signature']
+                sig_buffer = list(self._units[token]['signature'])
                 quantity_buffer = self._units[token]['quantity']
 
                 if in_numerator:
@@ -120,7 +125,8 @@ class units:
             else:
                 raise SyntaxError('Unit not recognized: {0:s}'.format(token))
 
-        return signature, quantity
+        return {'signature': signature,
+                'quantity': quantity}
 
     def _parse_unit_file(self, file):
         """Parse Unit Definition File
@@ -218,7 +224,7 @@ class units:
                 unit_name = result.group(1)
                 definition = result.group(2)
 
-                if unit_name in self.units:
+                if unit_name in self._units:
                     msg = 'Syntax error on line: {0:d}:'
                     msg += ' Unit {1:s} has already been specified.'
                     raise SyntaxError(msg.format(line_number, unit_name))
@@ -244,7 +250,7 @@ class units:
                         msg += ' Signature length inconsistent with previous units.'
                         raise SyntaxError(msg.format(line_number))
 
-                    self.units[unit_name] = {'signature': sig, 'quantity': 1}
+                    self._units[unit_name] = {'signature': sig, 'quantity': 1}
                 else:
                     result = re.match(physical_quantity_re_with_names, definition)
                     if result:
@@ -254,7 +260,9 @@ class units:
                         if (this_quantity <= 0):
                             raise SyntaxError('Quantity must be strictly positive.')
 
-                        sig, quantity = self._signature_and_quantity_for_unit(unit)
+                        sq = self._signature_and_quantity_for_unit(unit)
+                        sig = sq['signature']
+                        quantity = sq['quantity']
                         self._units[unit_name] = {'signature': sig,
                                                   'quantity': (quantity * this_quantity)}
 
@@ -285,8 +293,12 @@ class units:
 
         """
 
-        given_sig, given_quant = self._signature_and_quantity_for_unit(given_units)
-        des_sig, des_quant = self._signature_and_quantity_for_unit(desired_units)
+        given_sq = self._signature_and_quantity_for_unit(given_units)
+        given_sig = given_sq['signature']
+        given_quant = given_sq['quantity']
+        des_sq = self._signature_and_quantity_for_unit(desired_units)
+        des_sig = des_sq['signature']
+        des_quant = des_sq['quantity']
 
         for (fi, ti) in zip(given_sig, des_sig):
             if fi != ti:
