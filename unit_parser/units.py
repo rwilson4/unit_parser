@@ -131,6 +131,35 @@ class unit_parser:
         return {'signature': signature,
                 'quantity': quantity}
 
+
+    def _parse_physical_quantity(self, physical_quantity):
+        """Parse physical quantity.
+
+        Parameters
+        ----------
+        physical_quantity : str
+           String representing a physical quantity, like "5 feet".
+
+        Returns
+        -------
+        quantity : float
+           The quantity.
+        units : str
+           The units.
+
+        """
+        double_re = '[-+]?[0-9]*\.?[0-9]+'
+        composite_unit_re = '[a-zA-Z_]+'
+        physical_quantity_re_with_names = '(' + double_re + ')\s*(' + composite_unit_re + ')'
+        result = re.match(physical_quantity_re_with_names, physical_quantity)
+        if result:
+            quantity = float(result.group(1))
+            units = result.group(2)
+            return quantity, units
+        else:
+            raise SyntaxError('Invalid format')
+
+
     def _parse_unit_file(self, file):
         """Parse Unit Definition File
 
@@ -270,19 +299,16 @@ class unit_parser:
                                                   'quantity': (quantity * this_quantity)}
 
 
-    def convert(self, quantity, given_units, desired_units):
+    def convert(self, physical_quantity, desired_units):
         """Convert from one unit to another.
 
         Parameters
         ----------
-        quantity : numeric
-           Quantity to be converted.
-        given_units : str
-           String corresponding to a unit specification, like "feet_squared",
-           representing the units associated with quantity.
+        physical_quantity : str
+           String representing a physical quantity, like "5 feet"
         desired_units : str
-           String corresponding to a unit specification, representing the
-           desired units.
+           String corresponding to a unit specification, like "meters",
+           representing the desired units.
 
         Returns
         -------
@@ -292,11 +318,13 @@ class unit_parser:
         Usage
         -----
         To convert 5 feet into meters, do:
-         > convert(5, 'feet', 'meters')
+         > convert('5 feet', 'meters')
 
         """
 
-        given_sq = self._signature_and_quantity_for_unit(given_units)
+        quantity, units = self._parse_physical_quantity(physical_quantity)
+
+        given_sq = self._signature_and_quantity_for_unit(units)
         given_sig = given_sq['signature']
         given_quant = given_sq['quantity']
         des_sq = self._signature_and_quantity_for_unit(desired_units)

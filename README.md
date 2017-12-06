@@ -1,15 +1,21 @@
 # unit_parser
 Unit Parser and Conversions
 
-Because the last thing anyone asked for was another library for
-converting between feet and meters in Python. I'm not even trying to
-make this the best one! I wrote this initially because I wanted a unit
-*parser*. My homebrew-calc tool needs a way of parsing physical
-quantities in text files like JSON, so I wrote this. I wrote the
-original version in Matlab way back in the day. Put here (a) for
-posterity, so everyone can appreciate how unoriginal I am, and (b)
-because I can't be bothered to take the time to learn one of the
-myriad other unit conversion libraries and refactor my code
-accordingly. My self-loathing will continue to grow and I will
-eventually switch over to one of the established libraries, but for
-now, here we are!
+This library is primarily for parsing strings representing physical
+quantities, like "5 feet" or "88 miles_per_hour". It can also be used
+for converting between compatible units.
+
+There is really only one "public" function: convert, which is really
+used for parsing program inputs. For example, suppose there is an
+input (e.g. from a JSON) representing how much volume of water is to
+be used in a recipe. The user is free to specify the input in whatever
+units are most convenient, e.g. "2 gallons". The code that is parsing
+this input might call:
+```sh
+  > from unit_parser import unit_parser
+  > up = unit_parser() # Initialization required
+  > water_volume_liters = up.convert(water_volume, "liters")
+```
+In this way, no assumptions need to be made about units the input is
+in. The code requires the water volume to be expressed in liters, but
+it doesn't need to know or care how it was specified.
