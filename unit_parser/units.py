@@ -2,7 +2,7 @@ import re
 import os
 
 class unit_parser:
-    """Unit Parsing and Conversion.
+    """Unit Parser and Conversions.
 
     This library allows for converting between units. Perhaps its most
     interesting feature is its flexible unit specification
