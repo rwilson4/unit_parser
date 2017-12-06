@@ -1,7 +1,8 @@
 import re
+import os
 
-class units:
-    """Yet Another Unit Conversion Library
+class unit_parser:
+    """Unit Parsing and Conversion.
 
     This library allows for converting between units. Perhaps its most
     interesting feature is its flexible unit specification
@@ -40,7 +41,9 @@ class units:
         if unit_definitions is not None:
             self._parse_unit_file(unit_definitions)
         else:
-            self._parse_unit_file('units/units.txt')
+            this_dir, this_filename = os.path.split(__file__)
+            UNIT_PATH = os.path.join(this_dir, "units", "units.txt")
+            self._parse_unit_file(UNIT_PATH)
 
     def _signature_and_quantity_for_unit(self, unit):
         """Parse physical quantity.

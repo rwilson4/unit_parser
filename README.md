@@ -1,5 +1,5 @@
-# yaucl
-Yet Another Unit Conversion Library
+# unit_parser
+Unit Parser and Conversions
 
 Because the last thing anyone asked for was another library for
 converting between feet and meters in Python. I'm not even trying to
