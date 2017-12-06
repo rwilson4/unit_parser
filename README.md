@@ -5,7 +5,7 @@ This library is primarily for parsing strings representing physical
 quantities, like "5 feet" or "88 miles_per_hour". It can also be used
 for converting between compatible units.
 
-There is really only one "public" function: convert, which is really
+There is only one "public" function: convert, which is actually
 used for parsing program inputs. For example, suppose there is an
 input (e.g. from a JSON) representing how much volume of water is to
 be used in a recipe. The user is free to specify the input in whatever
@@ -16,9 +16,9 @@ this input might call:
   > up = unit_parser() # Initialization required
   > water_volume_liters = up.convert(water_volume, "liters")
 ```
-In this way, no assumptions need to be made about units the input is
-in. The code requires the water volume to be expressed in liters, but
-it doesn't need to know or care how it was specified.
+In this way, no assumptions need to be made about what units the input
+is in. The code requires the water volume to be expressed in liters,
+but it doesn't need to know or care how it was specified.
 
 Although the above example seems trivial, perhaps the most interesting
 feature is the flexible unit specification parsing. Units may be
@@ -48,5 +48,3 @@ Finally, 'second', 'seconds', and 'sec' are not automatically
 treated as equivalent units, but the unit definition file can and
 does create these as if they were aliases. For example, 'seconds'
 is defined as '1 second'.
-
-
