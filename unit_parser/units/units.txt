@@ -171,6 +171,9 @@ deg: 1 degree
 degC: [0 0 0 0 1 0]
 degF: 0.5555555555555 degC
 
+#### Velocity units ####
+mph: 1 mile_per_hour
+
 #### Force units ####
 newton: 1 kilogram_meter_per_second_squared
 newtons: 1 newton
