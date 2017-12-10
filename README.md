@@ -145,15 +145,15 @@ valid, and the end user would never even notice.
 
 If you are the sort of person that enjoys reading esoteric Wikipedia
 pages, the flexible syntax gives the fun opportunity to look up the
-official definition of units, and using that in the file. For example,
-it turns out the slug, which is a unit of mass in the imperial system,
-is actually defined as one pound of force times one second squared per
-foot. So this unit of mass is actually defined in terms of a unit of
-force, even though conceptually mass seems like the more primitive
-notion! The included unit file tries to be faithful to these
-definitions. The reader may quite reasonably ask if it makes any
-difference. The answer is no, except for the fun of it. (If you are
-*not* the sort of person who enjoys reading esoteric Wikipedia
+official definitions of units, and using that in the file. For
+example, it turns out the slug, which is a unit of mass in the
+imperial system, is actually defined as one pound of force times one
+second squared per foot. So this unit of mass is actually defined in
+terms of a unit of force, even though conceptually mass seems like the
+more primitive notion! The included unit file tries to be faithful to
+these definitions. The reader may quite reasonably ask if it makes any
+difference. The answer is no, except perhaps for the fun of it. (If
+you are *not* the sort of person who enjoys reading esoteric Wikipedia
 articles, this whole paragraph makes me sound like a weirdo.)
 
 Finally, this library ships with a command line utility called
