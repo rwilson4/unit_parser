@@ -93,3 +93,73 @@ of the answer.
   > up.divide("5 meters", "2 sec", "mph")
     5.59234073014
 ```
+
+As mentioned above, this library ships with a unit specification
+file. It contains many of the most common units, but you may find some
+glaring omissions. For your particular use case, you may prefer to
+create your own unit specification file and include that with your
+application. The unit specification file syntax is simple, if not
+intuitive. The file is plain-text, with key-value pairs separated by a
+colon. Comments may be included and begin with a semi-colon. Units are
+either specified as primitives, or in terms of other units. A
+primitive definition consists of specifying the signature of the unit,
+which is represented as a vector of non-negative integers. For example:
+````sh
+second: [1 0 0]
+````
+The entries of this vector correspond to the exponents of units in an
+arbitrary order that nonetheless needs to be consistent throughout the
+application. We might arbitrarily decide that time units go first,
+then length, then mass. Then since force has dimension mass times
+length divided by time squared, all units of force have signature [-2
+1 1]. The way we define the second really just tells the program which
+index (the first) corresponds to a particular primitive. A more
+complete specification might look like this:
+````sh
+second: [1 0 0]
+meter: [0 1 0]
+kilogram: [0 0 1]
+minute: 60 second
+hour: 60 minute
+# We can define a newton either like this:
+newton: 1 kilogram_meter_per_second_squared
+# or like this:
+# newton: [-2 1 1]
+# (first way preferred).
+````
+Once we have defined the "primitive" units, it is simple and intuitive
+to define other units recursively in terms of previously specified
+units. For example, the newton could have been defined in terms of its
+signature, but it is better to define it in terms of kilograms,
+meters, and seconds. A pound (of force) could *not* have been defined
+in terms of its signature, because although it has the same signature,
+it has a different quantity. Meaning, a pound is *not* equal to one
+kilogram meter per second squared, and defining units in terms of
+signatures implicitly assumes the quantity is one.
+
+The included unit specification file uses MKS (meters, kilograms,
+seconds) as the base, but as long as the internal specification is
+consistent, that is transparent to the user of such a file. A unit
+specification file using imperial units as the base would be just as
+valid, and the end user would never even notice.
+
+If you are the sort of person that enjoys reading esoteric Wikipedia
+pages, the flexible syntax gives the fun opportunity to look up the
+official definition of units, and using that in the file. For example,
+it turns out the slug, which is a unit of mass in the imperial system,
+is actually defined as one pound of force times one second squared per
+foot. So this unit of mass is actually defined in terms of a unit of
+force, even though conceptually mass seems like the more primitive
+notion! The included unit file tries to be faithful to these
+definitions. The reader may quite reasonably ask if it makes any
+difference. The answer is no, except for the fun of it. (If you are
+*not* the sort of person who enjoys reading esoteric Wikipedia
+articles, this whole paragraph makes me sound like a weirdo.)
+
+Finally, this library ships with a command line utility called
+"convert". This can be run from the command line like so:
+````sh
+$ convert 5 feet to meters
+1.524
+````
+(The "to" is optional, but I find it more intuitive to include it.)
