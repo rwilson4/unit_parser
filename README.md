@@ -1,5 +1,15 @@
-# unit_parser
-Unit Parser and Conversions
+# unit_parser: Unit Parser and Conversions
+
+<table>
+<tr>
+  <td>Build Status</td>
+  <td>
+    <a href="https://travis-ci.org/rwilson4/unit_parser">
+    <img src="https://travis-ci.org/rwilson4/unit_parser.svg?branch=master" alt="travis build status" />
+    </a>
+  </td>
+</tr>
+</table>
 
 This library is primarily for parsing strings representing physical
 quantities, like "5 feet" or "88 miles_per_hour". It can also be used
