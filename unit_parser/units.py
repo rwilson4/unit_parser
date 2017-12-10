@@ -336,3 +336,240 @@ class unit_parser:
                 raise ValueError('Units not compatible.')
 
         return quantity * given_quant / des_quant
+
+
+    def add(self, x, y, sum_units):
+        """Add physical quantities.
+
+        Parameters
+        ----------
+        x : str
+            String representing a physical quantity, like "5 meters".
+        y : str
+            String representing a physical quantity, like "2
+            feet". Must have same signature as x.
+        sum_units : str
+            Desired units of sum, like "yards". Must have the same
+            signature as both x and y.
+
+        Returns
+        -------
+        quantity : float
+            Number representing the sum of x and y in the specified
+            units.
+
+        Usage
+        -----
+        > from unit_parser import unit_parser
+        > up = unit_parser()
+        > x = "5 meters"
+        > y = "2 feet"
+        > up.add(x, y, "yards")
+         6.13473315836
+
+        """
+        x_quant, x_units = self._parse_physical_quantity(x)
+        y_quant, y_units = self._parse_physical_quantity(y)
+
+        x_sig_quant = self._signature_and_quantity_for_unit(x_units)
+        y_sig_quant = self._signature_and_quantity_for_unit(y_units)
+
+        x_sig = x_sig_quant['signature']
+        x_unit_quant = x_sig_quant['quantity']
+        y_sig = y_sig_quant['signature']
+        y_unit_quant = y_sig_quant['quantity']
+
+        for i in range(self._sig_len):
+            if x_sig[i] != y_sig[i]:
+                raise ValueError('Units not compatible.')
+
+        sum_quantity = x_quant * x_unit_quant + y_quant * y_unit_quant
+        sum_signature = [0] * self._sig_len
+        for i in range(self._sig_len):
+            sum_signature[i] = x_sig[i]
+
+        sum_sig_quant = self._signature_and_quantity_for_unit(sum_units)
+        sum_sig = sum_sig_quant['signature']
+        sum_unit_quant = sum_sig_quant['quantity']
+        for i in range(self._sig_len):
+            if sum_sig[i] != sum_signature[i]:
+                raise ValueError('Units not compatible.')
+
+        return sum_quantity / sum_unit_quant
+
+
+    def subtract(self, x, y, diff_units):
+        """Add physical quantities.
+
+        Parameters
+        ----------
+        x : str
+            String representing a physical quantity, like "5 meters".
+        y : str
+            String representing a physical quantity, like "2
+            feet". Must have same signature as x.
+        diff_units : str
+            Desired units of difference, like "yards". Must have the
+            same signature as both x and y.
+
+        Returns
+        -------
+        quantity : float
+            Number representing x minus y in the specified units.
+
+        Usage
+        -----
+        > from unit_parser import unit_parser
+        > up = unit_parser()
+        > x = "5 meters"
+        > y = "2 feet"
+        > up.subtract(x, y, "yards")
+         4.80139982502
+
+        """
+        x_quant, x_units = self._parse_physical_quantity(x)
+        y_quant, y_units = self._parse_physical_quantity(y)
+
+        x_sig_quant = self._signature_and_quantity_for_unit(x_units)
+        y_sig_quant = self._signature_and_quantity_for_unit(y_units)
+
+        x_sig = x_sig_quant['signature']
+        x_unit_quant = x_sig_quant['quantity']
+        y_sig = y_sig_quant['signature']
+        y_unit_quant = y_sig_quant['quantity']
+
+        for i in range(self._sig_len):
+            if x_sig[i] != y_sig[i]:
+                raise ValueError('Units not compatible.')
+
+        diff_quantity = x_quant * x_unit_quant - y_quant * y_unit_quant
+        diff_signature = [0] * self._sig_len
+        for i in range(self._sig_len):
+            diff_signature[i] = x_sig[i]
+
+        diff_sig_quant = self._signature_and_quantity_for_unit(diff_units)
+        diff_sig = diff_sig_quant['signature']
+        diff_unit_quant = diff_sig_quant['quantity']
+        for i in range(self._sig_len):
+            if diff_sig[i] != diff_signature[i]:
+                raise ValueError('Units not compatible.')
+
+        return diff_quantity / diff_unit_quant
+
+
+    def multiply(self, x, y, product_units):
+        """Multiply physical quantities.
+
+        Parameters
+        ----------
+        x : str
+            String representing a physical quantity, like "5 meters_per_sec"
+        y : str
+            String representing a physical quantity, like "2 kg"
+        product_units : str
+            Desired units of product, like "kg_meters_per_sec". Must
+            have the same signature as the product of x and y would
+            have. Function will raise a ValueError if you try to
+            multiply "meters_per_sec" and "kg" and express the product
+            in "meters_per_sec_squared".
+
+        Returns
+        -------
+        quantity : float
+            Number representing the product of x and y in the
+            specified units.
+
+        Usage
+        -----
+        > from unit_parser import unit_parser
+        > up = unit_parser()
+        > x = "5 meters_per_second_squared"
+        > y = "2 kg"
+        > up.multiply(x, y, "newtons")
+         10
+        > up.multiply(x, y, "pounds")
+         2.248089431
+
+        """
+        x_quant, x_units = self._parse_physical_quantity(x)
+        y_quant, y_units = self._parse_physical_quantity(y)
+
+        x_sig_quant = self._signature_and_quantity_for_unit(x_units)
+        y_sig_quant = self._signature_and_quantity_for_unit(y_units)
+
+        x_sig = x_sig_quant['signature']
+        x_unit_quant = x_sig_quant['quantity']
+        y_sig = y_sig_quant['signature']
+        y_unit_quant = y_sig_quant['quantity']
+
+        product_quantity = x_quant * x_unit_quant * y_quant * y_unit_quant
+        product_signature = [0] * self._sig_len
+        for i in range(self._sig_len):
+            product_signature[i] = x_sig[i] + y_sig[i]
+
+        prod_sig_quant = self._signature_and_quantity_for_unit(product_units)
+        prod_sig = prod_sig_quant['signature']
+        prod_unit_quant = prod_sig_quant['quantity']
+        for i in range(self._sig_len):
+            if prod_sig[i] != product_signature[i]:
+                raise ValueError('Units not compatible.')
+
+        return product_quantity / prod_unit_quant
+
+
+    def divide(self, numerator, denominator, quotient_units):
+        """Divide physical quantities.
+
+        Parameters
+        ----------
+        numerator : str
+            String representing a physical quantity, like "5 meters"
+        denominator : str
+            String representing a physical quantity, like "2 sec"
+        quotient_units : str
+            Desired units of product, like "meters_per_sec". Must have
+            the same signature as the quotient would have. Function
+            will raise a ValueError if you try to divide "meters" by
+            "sec" and express the product in "meters_per_sec_squared".
+
+        Returns
+        -------
+        quantity : float
+            Number representing the quotient in the specified units.
+
+        Usage
+        -----
+        > from unit_parser import unit_parser
+        > up = unit_parser()
+        > x = "5 meters"
+        > y = "2 sec"
+        > up.divide(x, y, "meters_per_sec")
+         2.5
+        > up.divide(x, y, "feet_per_sec")
+         8.20209973753
+
+        """
+        num_quant, num_units = self._parse_physical_quantity(numerator)
+        denom_quant, denom_units = self._parse_physical_quantity(denominator)
+
+        num_sig_quant = self._signature_and_quantity_for_unit(num_units)
+        denom_sig_quant = self._signature_and_quantity_for_unit(denom_units)
+
+        num_sig = num_sig_quant['signature']
+        num_unit_quant = num_sig_quant['quantity']
+        denom_sig = denom_sig_quant['signature']
+        denom_unit_quant = denom_sig_quant['quantity']
+
+        quotient_quantity = (num_quant * num_unit_quant) / (denom_quant * denom_unit_quant)
+        quotient_signature = [0] * self._sig_len
+        for i in range(self._sig_len):
+            quotient_signature[i] = num_sig[i] - denom_sig[i]
+
+        quot_sig_quant = self._signature_and_quantity_for_unit(quotient_units)
+        quot_sig = quot_sig_quant['signature']
+        quot_quant = quot_sig_quant['quantity']
+        for i in range(self._sig_len):
+            if quot_sig[i] != quotient_signature[i]:
+                raise ValueError('Units not compatible.')
+
+        return quotient_quantity / quot_quant
