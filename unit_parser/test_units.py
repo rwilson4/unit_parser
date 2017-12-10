@@ -42,7 +42,37 @@ def test_feet_to_lbf():
     """
     up = unit_parser()
     with pytest.raises(ValueError):
-        assert up.convert("5 feet", "lbf")
+        up.convert("5 feet", "lbf")
 
 
-    
+def test_kg_times_meters_per_second_squared():
+    """Tests multiplying kilograms and meters_per_second_squared.
+
+    """
+    up = unit_parser()
+    assert up.multiply("2 kilograms", "5 meters_per_second_squared", "newtons") == 10
+
+
+def test_meters_divided_by_seconds():
+    """Tests dividing meters by seconds.
+
+    """
+    up = unit_parser()
+    assert up.divide("5 meters", "2 seconds", "meters_per_second") == 2.5
+
+
+def test_meters_plus_meters():
+    """Tests adding meters
+
+    """
+    up = unit_parser()
+    assert up.add("5 meters", "2 meters", "meters") == 7
+
+
+def test_meters_plus_seconds():
+    """Tests adding meters
+
+    """
+    up = unit_parser()
+    with pytest.raises(ValueError):
+        up.add("5 meters", "2 seconds", "meters")
