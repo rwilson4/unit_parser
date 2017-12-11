@@ -134,4 +134,29 @@ def test_invalid_physical_quantity():
     with pytest.raises(SyntaxError):
         up._parse_physical_quantity("meters")
 
-    
+
+def test_per_per_unit_specification():
+    """Tests attempting to parse a unit specification 'per_per'.
+
+    """
+    up = unit_parser()
+    with pytest.raises(SyntaxError):
+        up._signature_and_quantity_for_unit("per_per")
+
+
+def test_squared_unit_specification():
+    """Tests attempting to parse a unit specification 'squared'.
+
+    """
+    up = unit_parser()
+    with pytest.raises(SyntaxError):
+        up._signature_and_quantity_for_unit("squared")
+
+
+def test_unit_specification_typo():
+    """Tests attempting to parse a unit specification 'metes'.
+
+    """
+    up = unit_parser()
+    with pytest.raises(SyntaxError):
+        up._signature_and_quantity_for_unit("metes")
