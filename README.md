@@ -19,6 +19,13 @@
 </tr>
 </table>
 
+## Installing
+Install from PyPI:
+````sh
+$ pip install unit_parser
+````
+
+## Usage
 This library is primarily for parsing strings representing physical
 quantities, like "5 feet" or "88 miles_per_hour". It can also be used
 for converting between compatible units and doing basic arithmetic
@@ -181,9 +188,3 @@ $ convert 5 feet to meters
 1.524
 ````
 (The "to" is optional, but I find it more intuitive to include it.)
-
-## Installing
-Install from PyPI:
-````sh
-$ pip install unit_parser
-````
