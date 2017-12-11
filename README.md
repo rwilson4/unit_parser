@@ -181,3 +181,9 @@ $ convert 5 feet to meters
 1.524
 ````
 (The "to" is optional, but I find it more intuitive to include it.)
+
+## Installing
+Install from PyPI:
+````sh
+$ pip install unit_parser
+````
