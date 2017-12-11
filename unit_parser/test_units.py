@@ -69,6 +69,14 @@ def test_meters_plus_meters():
     assert up.add("5 meters", "2 meters", "meters") == 7
 
 
+def test_meters_minus_meters():
+    """Tests subtracting meters
+
+    """
+    up = unit_parser()
+    assert up.subtract("5 meters", "2 meters", "meters") == 3
+
+
 def test_meters_plus_seconds():
     """Tests adding meters
 
