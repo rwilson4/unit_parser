@@ -6,10 +6,11 @@ python:
 
 install:
  - pip install codecov
+ - pip install pytest-cov
  - pip install -r requirements.txt
 
 script:
- - coverage pytest
+ - pytest --cov=./
 
 after_success:
  - codecov
