@@ -1,9 +1,6 @@
 from .units import unit_parser
 import pytest
 
-def inc(x):
-    return x + 1
-
 def test_feet_to_meters():
     """Tests conversion from feet to meters.
 
@@ -53,6 +50,15 @@ def test_kg_times_meters_per_second_squared():
     assert up.multiply("2 kilograms", "5 meters_per_second_squared", "newtons") == 10
 
 
+def test_kg_times_meters_per_second_squared_in_slugs():
+    """Tests multiplying kilograms and meters_per_second_squared.
+
+    """
+    up = unit_parser()
+    with pytest.raises(ValueError):
+        up.multiply("2 kilograms", "5 meters_per_second_squared", "slug")
+
+
 def test_meters_divided_by_seconds():
     """Tests dividing meters by seconds.
 
@@ -61,26 +67,71 @@ def test_meters_divided_by_seconds():
     assert up.divide("5 meters", "2 seconds", "meters_per_second") == 2.5
 
 
+def test_meters_divided_by_seconds_in_yards():
+    """Tests dividing meters by seconds but expressing the results in yards.
+
+    """
+    up = unit_parser()
+    with pytest.raises(ValueError):
+        up.divide("5 meters", "2 seconds", "yards")
+
+
 def test_meters_plus_meters():
-    """Tests adding meters
+    """Tests adding meters.
 
     """
     up = unit_parser()
     assert up.add("5 meters", "2 meters", "meters") == 7
 
 
+def test_meters_plus_seconds():
+    """Tests adding meters and seconds.
+
+    """
+    up = unit_parser()
+    with pytest.raises(ValueError):
+        up.add("5 meters", "2 seconds", "meters")
+
+def test_meters_plus_meters_in_seconds():
+    """Tests adding meters and meters but expressing results in seconds.
+
+    """
+    up = unit_parser()
+    with pytest.raises(ValueError):
+        up.add("5 meters", "2 meters", "seconds")
+
 def test_meters_minus_meters():
-    """Tests subtracting meters
+    """Tests subtracting meters.
 
     """
     up = unit_parser()
     assert up.subtract("5 meters", "2 meters", "meters") == 3
 
 
-def test_meters_plus_seconds():
-    """Tests adding meters
+def test_meters_minus_seconds():
+    """Tests subtracting meters minus seconds.
 
     """
     up = unit_parser()
     with pytest.raises(ValueError):
-        up.add("5 meters", "2 seconds", "meters")
+        up.subtract("5 meters", "2 seconds", "meters")
+
+
+def test_meters_minus_meters_in_seconds():
+    """Tests subtracting meters minus meters in seconds.
+
+    """
+    up = unit_parser()
+    with pytest.raises(ValueError):
+        up.subtract("5 meters", "2 meters", "seconds")
+
+
+def test_invalid_physical_quantity():
+    """Tests attempting to parse an invalid physical quantity.
+
+    """
+    up = unit_parser()
+    with pytest.raises(SyntaxError):
+        up._parse_physical_quantity("meters")
+
+    
