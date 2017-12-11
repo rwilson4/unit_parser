@@ -160,3 +160,44 @@ def test_unit_specification_typo():
     up = unit_parser()
     with pytest.raises(SyntaxError):
         up._signature_and_quantity_for_unit("metes")
+
+
+def test_invalid_unit_spec_just_key():
+    """Tests a unit specification file with just a key (no value).
+
+    """
+    with pytest.raises(SyntaxError):
+        up = unit_parser('test_files/just_key.txt')
+
+
+def test_invalid_unit_spec_duplicate_entry():
+    """Tests a unit specification file with the same unit defined twice.
+
+    """
+    with pytest.raises(SyntaxError):
+        up = unit_parser('test_files/duplicate_entry.txt')
+
+
+def test_invalid_unit_spec_nonalphabetic_unit_name():
+    """Tests a unit specification file with a unit name 's3cond'.
+
+    """
+    with pytest.raises(SyntaxError):
+        up = unit_parser('test_files/non_alphabetic_unit_name.txt')
+
+
+def test_invalid_unit_spec_inconsistent_signature_lengths():
+    """Tests a unit specification file with inconsistent signature
+    lengths.
+
+    """
+    with pytest.raises(SyntaxError):
+        up = unit_parser('test_files/different_signature_lengths.txt')
+
+
+def test_invalid_unit_spec_negative_quantity():
+    """Tests a unit specification file with negative quantity.
+
+    """
+    with pytest.raises(SyntaxError):
+        up = unit_parser('test_files/negative_quantity.txt')
