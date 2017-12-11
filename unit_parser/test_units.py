@@ -1,5 +1,11 @@
 from .units import unit_parser
 import pytest
+import os
+
+def get_cwd():
+    this_dir, this_filename = os.path.split(__file__)
+    return this_dir
+
 
 def test_feet_to_meters():
     """Tests conversion from feet to meters.
@@ -166,24 +172,30 @@ def test_invalid_unit_spec_just_key():
     """Tests a unit specification file with just a key (no value).
 
     """
+    this_dir = get_cwd()
+    path = os.path.join(this_dir, "test_files", "just_key.txt")
     with pytest.raises(SyntaxError):
-        up = unit_parser('test_files/just_key.txt')
+        up = unit_parser(path)
 
 
 def test_invalid_unit_spec_duplicate_entry():
     """Tests a unit specification file with the same unit defined twice.
 
     """
+    this_dir = get_cwd()
+    path = os.path.join(this_dir, "test_files", "duplicate_entry.txt")
     with pytest.raises(SyntaxError):
-        up = unit_parser('test_files/duplicate_entry.txt')
+        up = unit_parser(path)
 
 
 def test_invalid_unit_spec_nonalphabetic_unit_name():
     """Tests a unit specification file with a unit name 's3cond'.
 
     """
+    this_dir = get_cwd()
+    path = os.path.join(this_dir, "test_files", "non_alphabetic_unit_name.txt")
     with pytest.raises(SyntaxError):
-        up = unit_parser('test_files/non_alphabetic_unit_name.txt')
+        up = unit_parser(path)
 
 
 def test_invalid_unit_spec_inconsistent_signature_lengths():
@@ -191,13 +203,17 @@ def test_invalid_unit_spec_inconsistent_signature_lengths():
     lengths.
 
     """
+    this_dir = get_cwd()
+    path = os.path.join(this_dir, "test_files", "different_signature_lengths.txt")
     with pytest.raises(SyntaxError):
-        up = unit_parser('test_files/different_signature_lengths.txt')
+        up = unit_parser(path)
 
 
 def test_invalid_unit_spec_negative_quantity():
     """Tests a unit specification file with negative quantity.
 
     """
+    this_dir = get_cwd()
+    path = os.path.join(this_dir, "test_files", "negative_quantity.txt")
     with pytest.raises(SyntaxError):
-        up = unit_parser('test_files/negative_quantity.txt')
+        up = unit_parser(path)
