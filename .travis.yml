@@ -3,13 +3,14 @@ python:
  - 2.7
  - 3.6
 
+before_install:
+ - pip install codecov
+
 install:
  - pip install -r requirements.txt
 
 script:
  - pytest
 
-before_install:
- pip install codecov
 after_success:
- codecov
+ - codecov
