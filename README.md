@@ -125,10 +125,11 @@ glaring omissions. For your particular use case, you may prefer to
 create your own unit specification file and include that with your
 application. The unit specification file syntax is simple, if not
 intuitive. The file is plain-text, with key-value pairs separated by a
-colon. Comments may be included and begin with a semi-colon. Units are
-either specified as primitives, or in terms of other units. A
-primitive definition consists of specifying the signature of the unit,
-which is represented as a vector of non-negative integers. For example:
+colon. Comments may be included and begin with a pound symbol
+(#). Units are either specified as primitives, or in terms of other
+units. A primitive definition consists of specifying the signature of
+the unit, which is represented as a vector of non-negative
+integers. For example:
 ````sh
 second: [1 0 0]
 ````
