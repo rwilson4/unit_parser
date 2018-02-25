@@ -39,6 +39,14 @@ between units and is thus called "convert".
   > up.convert("3 gallons", "liters")
     11.356235352
 ```
+It may seem a little strange to have the number as part of the string,
+but keep in mind this function is used in the context of converting
+text inputs. For convenience, the---perhaps more intuitive---syntax
+works as well:
+```sh
+  > up.convert(3, "gallons", "liters")
+    11.356235352
+```
 Note the unit parser must be initialized before being used by calling
 the unit_parser() function without any arguments. That uses the
 built-in unit specification file to define the units recognized by

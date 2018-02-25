@@ -317,8 +317,10 @@ class unit_parser:
                                                   'quantity': (quantity * this_quantity)}
 
 
-    def convert(self, physical_quantity, desired_units):
+    def convert(self, *args):
         """Convert from one unit to another.
+
+        This function can be used in two ways; see Usage.
 
         Parameters
         ----------
@@ -327,6 +329,11 @@ class unit_parser:
         desired_units : str
            String corresponding to a unit specification, like "meters",
            representing the desired units.
+        quantity : numeric
+           Used in conjunction with 'units'
+        units : string
+           String corresponding to a unit specification, used in
+           conjunction with 'quantity'.
 
         Returns
         -------
@@ -335,12 +342,27 @@ class unit_parser:
 
         Usage
         -----
-        To convert 5 feet into meters, do:
+        des_quantity = convert(physical_quantity, desired_units)
+        des_quantity = convert(quantity, units, desired_units)
+
+        To convert 5 feet into meters, do either of the following:
          > convert('5 feet', 'meters')
+         > convert(5, 'feet', 'meters')
 
         """
 
-        quantity, units = self._parse_physical_quantity(physical_quantity)
+        if len(args) == 2:
+            physical_quantity = args[0]
+            desired_units = args[1]
+            quantity, units = self._parse_physical_quantity(physical_quantity)
+        elif len(args) == 3:
+            quantity = args[0]
+            units = args[1]
+            desired_units = args[2]
+        else:
+            msg = 'Function must be called with 2 or 3 arguments;'
+            msg += ' see documentation'
+            raise SyntaxError(msg)
 
         given_sq = self._signature_and_quantity_for_unit(units)
         given_sig = given_sq['signature']

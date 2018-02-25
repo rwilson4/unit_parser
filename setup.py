@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='unit_parser',
-      version='0.1',
+      version='0.2',
       description='Unit Parser and Conversions',
       long_description=open('README.md').read(),
       keywords=['unit', 'conversion', 'parsing',
