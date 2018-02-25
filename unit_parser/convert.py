@@ -36,7 +36,7 @@ def main():
         desired_units = args.desired_units[1]
         
     up = unit_parser()
-    desired_quantity = up.convert(str(quantity) + " " + given_units, desired_units)
+    desired_quantity = up.convert(quantity, given_units, desired_units)
     print(desired_quantity)
 
 if __name__ == '__main__':

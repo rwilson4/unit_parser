@@ -26,11 +26,19 @@ def get_cwd():
 
 
 def test_feet_to_meters():
-    """Tests conversion from feet to meters.
+    """Tests conversion from feet to meters, using 2 arguments.
 
     """
     up = unit_parser()
     assert up.convert("5 feet", "meters") == 1.524
+
+
+def test_feet_to_meters_long():
+    """Tests conversion from feet to meters, using 3 arguments.
+
+    """
+    up = unit_parser()
+    assert up.convert(5, "feet", "meters") == 1.524
 
 
 def test_days_to_seconds():

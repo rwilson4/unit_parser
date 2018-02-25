@@ -34,9 +34,17 @@ operations.
 The parsing function does double duty as a method for converting
 between units and is thus called "convert".
 ```sh
-  > from unit_parser import unit_parser
-  > up = unit_parser()
-  > up.convert("3 gallons", "liters")
+  >>> from unit_parser import unit_parser
+  >>> up = unit_parser()
+  >>> up.convert("3 gallons", "liters")
+    11.356235352
+```
+It may seem a little strange to have the number as part of the string,
+but keep in mind this function is used in the context of converting
+text inputs. For convenience, the---perhaps more intuitive---syntax
+works as well:
+```sh
+  >>> up.convert(3, "gallons", "liters")
     11.356235352
 ```
 Note the unit parser must be initialized before being used by calling
@@ -60,12 +68,12 @@ to specify the input in whatever units are most convenient, e.g. "2
 gallons". The code that is parsing this input might call:
 
 ```sh
-  > import json
-  > from unit_parser import unit_parser
-  > up = unit_parser()
-  > config = json.load(open('example.json', 'r'))
-  > water_volume = config['water_volume']
-  > water_volume_liters = up.convert(water_volume, "liters")
+  >>> import json
+  >>> from unit_parser import unit_parser
+  >>> up = unit_parser()
+  >>> config = json.load(open('example.json', 'r'))
+  >>> water_volume = config['water_volume']
+  >>> water_volume_liters = up.convert(water_volume, "liters")
 ```
 
 In this way, no assumptions need to be made about what units the input
@@ -107,15 +115,15 @@ takes three arguments: two physical quantities, and the desired units
 of the answer.
 
 ```sh
-  > from unit_parser import unit_parser
-  > up = unit_parser()
-  > up.add("5 meters", "2 feet", "yards")
+  >>> from unit_parser import unit_parser
+  >>> up = unit_parser()
+  >>> up.add("5 meters", "2 feet", "yards")
     6.13473315836
-  > up.subtract("5 meters", "2 feet", "yards")
+  >>> up.subtract("5 meters", "2 feet", "yards")
     4.80139982502
-  > up.multiply("5 meters_per_sec_squared", "2 kg", "pounds")
+  >>> up.multiply("5 meters_per_sec_squared", "2 kg", "pounds")
     2.248089431
-  > up.divide("5 meters", "2 sec", "mph")
+  >>> up.divide("5 meters", "2 sec", "mph")
     5.59234073014
 ```
 
