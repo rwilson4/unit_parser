@@ -2,6 +2,14 @@
 
 <table>
 <tr>
+  <td>Latest Release</td>
+  <td><img src="https://img.shields.io/pypi/v/unit_parser.svg" alt="latest release" /></td>
+</tr>
+<tr>
+  <td>License</td>
+  <td><img src="https://img.shields.io/pypi/l/unit_parser.svg" alt="licence" /></td>
+</tr>
+<tr>
   <td>Build Status</td>
   <td>
     <a href="https://travis-ci.org/rwilson4/unit_parser">
