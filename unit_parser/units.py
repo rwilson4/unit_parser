@@ -356,7 +356,7 @@ class unit_parser:
             desired_units = args[1]
             quantity, units = self._parse_physical_quantity(physical_quantity)
         elif len(args) == 3:
-            quantity = args[0]
+            quantity = float(args[0])
             units = args[1]
             desired_units = args[2]
         else:

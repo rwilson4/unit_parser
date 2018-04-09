@@ -251,6 +251,18 @@ def test_invalid_unit_spec_negative_quantity():
         up = unit_parser(path)
 
 
+def test_invalid_num_args():
+    up = unit_parser()
+    with pytest.raises(SyntaxError):
+        up.convert(5, 'feet', 'to', 'meters')
+
+
+def test_invalid_convert_args():
+    up = unit_parser()
+    with pytest.raises(ValueError):
+        up.convert('cat', 'feet', 'meters')
+
+
 def test_command_line_convert():
     testargs = ["convert", "5", "feet", "inches"]
     with patch.object(sys, 'argv', testargs):
