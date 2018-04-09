@@ -1,6 +1,12 @@
 from .units import unit_parser
+from .convert import main as convert_main
 import pytest
 import os
+import sys
+try:
+    from unittest.mock import patch
+except ImportError:
+    from mock import patch
 
 #   File: test_units.py
 #   Purpose: test cases for unit parser
@@ -243,3 +249,17 @@ def test_invalid_unit_spec_negative_quantity():
     path = os.path.join(this_dir, "test_files", "negative_quantity.txt")
     with pytest.raises(SyntaxError):
         up = unit_parser(path)
+
+
+def test_command_line_convert():
+    testargs = ["convert", "5", "feet", "inches"]
+    with patch.object(sys, 'argv', testargs):
+        ans = convert_main()
+        assert ans == pytest.approx(60)
+
+
+def test_command_line_convert_with_to():
+    testargs = ["convert", "5", "feet", "to", "inches"]
+    with patch.object(sys, 'argv', testargs):
+        ans = convert_main()
+        assert ans == pytest.approx(60)

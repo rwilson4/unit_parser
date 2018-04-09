@@ -38,6 +38,7 @@ def main():
     up = unit_parser()
     desired_quantity = up.convert(quantity, given_units, desired_units)
     print(desired_quantity)
+    return desired_quantity
 
 if __name__ == '__main__':
     main()
