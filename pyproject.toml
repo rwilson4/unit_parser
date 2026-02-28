@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "unit_parser"
+version = "0.2"
+description = "Unit Parser and Conversions"
+readme = "README.md"
+authors = [
+    {name = "Bob Wilson", email = "bob@convexanalytics.com"},
+]
+license = {text = "Apache 2.0"}
+keywords = ["unit", "conversion", "parsing", "physics", "engineering"]
+
+[project.urls]
+repository = "https://github.com/rwilson4/unit_parser"
+
+[project.scripts]
+convert = "unit_parser.convert:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+unit_parser = ["units/*.txt"]
