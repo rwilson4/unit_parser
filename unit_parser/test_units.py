@@ -201,18 +201,18 @@ def test_invalid_convert_args():
         up.convert('cat', 'feet', 'meters')  # type: ignore[call-overload]
 
 
-def test_command_line_convert():
+def test_command_line_convert(capsys: pytest.CaptureFixture[str]) -> None:
     testargs = ['convert', '5', 'feet', 'inches']
     with patch.object(sys, 'argv', testargs):
-        ans = convert_main()
-        assert ans == pytest.approx(60)
+        convert_main()
+    assert float(capsys.readouterr().out.strip()) == pytest.approx(60)
 
 
-def test_command_line_convert_with_to():
+def test_command_line_convert_with_to(capsys: pytest.CaptureFixture[str]) -> None:
     testargs = ['convert', '5', 'feet', 'to', 'inches']
     with patch.object(sys, 'argv', testargs):
-        ans = convert_main()
-        assert ans == pytest.approx(60)
+        convert_main()
+    assert float(capsys.readouterr().out.strip()) == pytest.approx(60)
 
 
 def test_command_line_convert_invalid_filler():

@@ -5,7 +5,7 @@ import argparse
 from .units import UnitParser
 
 
-def main() -> float:
+def main() -> None:
     parser = argparse.ArgumentParser(description='Unit conversions')
     parser.add_argument('quantity', type=float, help='Given quantity')
     parser.add_argument('given_units', type=str, help='Given units')
@@ -29,9 +29,7 @@ def main() -> float:
         )
 
     up = UnitParser()
-    desired_quantity = up.convert(args.quantity, args.given_units, desired_units)
-    print(desired_quantity)
-    return desired_quantity
+    print(up.convert(args.quantity, args.given_units, desired_units))
 
 
 if __name__ == '__main__':
