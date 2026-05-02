@@ -156,7 +156,7 @@ tablespoon: 0.5 fluidOunces
 tablespoons: 1 tablespoon
 tbsp: 1 tablespoon
 
-teaspoon: 0.3333333 tablespoons
+teaspoon: 1/3 tablespoons
 teaspoons: 1 teaspoon
 tsp: 1 teaspoon
 

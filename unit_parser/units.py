@@ -2,6 +2,7 @@
 
 import re
 from dataclasses import dataclass
+from fractions import Fraction
 from pathlib import Path
 from typing import overload
 
@@ -156,13 +157,15 @@ class UnitParser:
 
         """
         double_re = r'[-+]?[0-9]*\.?[0-9]+'
+        fraction_re = r'[-+]?[0-9]+/[0-9]+'
+        number_re = r'(?:' + fraction_re + r'|' + double_re + r')'
         composite_unit_re = r'[a-zA-Z_]+'
         physical_quantity_re_with_names = (
-            r'(' + double_re + r')\s*(' + composite_unit_re + r')'
+            r'(' + number_re + r')\s*(' + composite_unit_re + r')'
         )
         result = re.match(physical_quantity_re_with_names, physical_quantity)
         if result:
-            quantity = float(result.group(1))
+            quantity = float(Fraction(result.group(1)))
             units = result.group(2)
             return quantity, units
         else:
@@ -214,6 +217,8 @@ class UnitParser:
         # This regular expression matches a double.
         # Source: http://www.regular-expressions.info/floatingpoint.html
         double_re = r'[-+]?[0-9]*\.?[0-9]+'
+        fraction_re = r'[-+]?[0-9]+/[0-9]+'
+        number_re = r'(?:' + fraction_re + r'|' + double_re + r')'
 
         # This regular expression represents a row vector, using Matlab
         # notation. Examples:
@@ -224,9 +229,10 @@ class UnitParser:
         # This regular expression represents a physical quantity. Examples:
         #   1 day
         #   60 seconds
-        physical_quantity_re = double_re + r'\s*' + composite_unit_re
+        #   1/3 tablespoons
+        physical_quantity_re = number_re + r'\s*' + composite_unit_re
         physical_quantity_re_with_names = (
-            r'(' + double_re + r')\s*(' + composite_unit_re + r')'
+            r'(' + number_re + r')\s*(' + composite_unit_re + r')'
         )
 
         # This regular expression represents a unit specification.
@@ -301,7 +307,7 @@ class UnitParser:
                 else:
                     result = re.match(physical_quantity_re_with_names, definition)
                     if result:
-                        this_quantity = float(result.group(1))
+                        this_quantity = float(Fraction(result.group(1)))
                         unit = result.group(2)
 
                         if this_quantity <= 0:
