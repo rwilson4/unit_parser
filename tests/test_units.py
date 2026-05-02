@@ -353,6 +353,28 @@ def test_round_trip(value, unit_a, unit_b):
     assert final == pytest.approx(value)
 
 
+# --- fraction support --------------------------------------------------------
+
+
+def test_parse_physical_quantity_fraction():
+    up = UnitParser()
+    qty, units = up._parse_physical_quantity('1/3 tablespoons')
+    assert qty == pytest.approx(1 / 3)
+    assert units == 'tablespoons'
+
+
+def test_convert_fraction_runtime_input():
+    """'1/3 tablespoons' should equal exactly 1 teaspoon."""
+    up = UnitParser()
+    assert up.convert('1/3 tablespoons', 'teaspoons') == pytest.approx(1.0)
+
+
+def test_teaspoon_exact_third():
+    """3 teaspoons should equal exactly 1 tablespoon (tight tolerance)."""
+    up = UnitParser()
+    assert up.convert('3 teaspoons', 'tablespoons') == pytest.approx(1.0, rel=1e-9)
+
+
 # --- case sensitivity --------------------------------------------------------
 
 
