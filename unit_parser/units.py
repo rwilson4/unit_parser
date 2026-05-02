@@ -10,7 +10,7 @@ from typing import overload
 class _UnitSpec:
     """Internal representation of a unit's dimensional signature and quantity."""
 
-    signature: list[int]
+    signature: tuple[int, ...]
     quantity: float
 
 
@@ -74,10 +74,7 @@ class UnitParser:
 
         """
         if unit in self._units:
-            return _UnitSpec(
-                signature=list(self._units[unit].signature),
-                quantity=self._units[unit].quantity,
-            )
+            return self._units[unit]
 
         # Parse string
         tokens = unit.split('_')
@@ -140,7 +137,7 @@ class UnitParser:
             else:
                 raise ValueError(f'Unit not recognized: {token}')
 
-        return _UnitSpec(signature=signature, quantity=quantity)
+        return _UnitSpec(signature=tuple(signature), quantity=quantity)
 
     def _parse_physical_quantity(self, physical_quantity: str) -> tuple[float, str]:
         """Parse physical quantity string.
@@ -290,12 +287,11 @@ class UnitParser:
                     sig_strs = re.compile(r',|\s+,?\s*').split(
                         defined_by_signature.group(1)
                     )
-                    sig = [int(s) for s in sig_strs]
+                    sig = tuple(int(s) for s in sig_strs)
 
-                    sig_len = len(sig)
                     if self._sig_len == -1:
-                        self._sig_len = sig_len
-                    elif sig_len != self._sig_len:
+                        self._sig_len = len(sig)
+                    elif len(sig) != self._sig_len:
                         raise ValueError(
                             f'Syntax error on line: {line_number}:'
                             f' Signature length inconsistent with previous units.'

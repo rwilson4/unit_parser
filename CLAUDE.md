@@ -74,9 +74,9 @@ single-module layout is correct — resist splitting it up prematurely.
 Each unit is stored in `UnitParser._units` as a `_UnitSpec` dataclass with two
 fields:
 
-- **`signature`**: list of integers (length 6 by default) holding dimensional
+- **`signature`**: tuple of integers (length 6 by default) holding dimensional
   exponents in the order `[length, mass, time, angle, temperature, charge]`.
-  Example: `newton` is `[1, 1, -2, 0, 0, 0]`.
+  Example: `newton` is `(1, 1, -2, 0, 0, 0)`.
 - **`quantity`**: float conversion factor relative to the SI base unit for
   that dimension.
 
@@ -88,9 +88,11 @@ signature-form line encountered in the unit file (`self._sig_len`). All
 subsequent signature-form lines must agree. A custom unit file can therefore
 use any consistent dimension count.
 
-`_UnitSpec` is declared `frozen=True` but holds a `list[int]`, which is
-mutable. Any rewrite should switch this to `tuple[int, ...]` so frozenness is
-real.
+Both `_UnitSpec` fields are immutable, so the cache lookup in
+`_signature_and_quantity_for_unit` returns the stored spec directly without
+defensive copying. Anything that needs to mutate (the per-call accumulators
+inside that method) builds its own local `list[int]` and packages the result
+back into a `tuple` before returning.
 
 ### Compound unit parsing (`_signature_and_quantity_for_unit`)
 
