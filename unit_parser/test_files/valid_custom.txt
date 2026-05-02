@@ -1,0 +1,7 @@
+# Minimal custom unit file with a non-default dimension count (2)
+# and a derived unit defined via a compound expression.
+sec: [0 1]
+m: [1 0]
+km: 1000 m
+hr: 3600 sec
+mps: 1 m_per_sec

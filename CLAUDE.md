@@ -197,18 +197,24 @@ should explicitly accept an optional `to` literal.
 - **Docstrings** are NumPy-style. Keep that consistent if you add new ones.
 - **Don't write throwaway planning docs.** Work from this file and the code.
 
-## Test coverage gaps
+## Test coverage
 
-The current suite (`unit_parser/test_units.py`) is a good starting point but
-misses:
+The suite covers `cubed` (signature, conversion, and denominator placement),
+loading a valid custom unit file with a non-default dimension count and a
+compound-expression definition, the `_parse_physical_quantity` happy path
+(simple, decimal, no-space, compound units), parametrized round-trip
+conversions across length / mass / volume / velocity / force, and
+case-sensitive unit lookup. Coverage sits at 99 %; the two missing lines are
+the `if __name__ == '__main__'` guard in `convert.py` and a
+defense-in-depth `ValueError` in `_parse_unit_file` that the outer regex
+already prevents from firing.
 
-- `cubed` keyword (only `squared` is exercised)
-- Successfully loading a *valid* custom unit file (only error paths are tested)
-- Compound units defined inside a custom unit file
-- `_parse_physical_quantity` happy path (only the error case is tested
-  directly; happy path is covered transitively)
-- Round-trip conversions (`A→B→A` should equal the input within tolerance)
-- Whitespace / case sensitivity behavior at boundaries
+Conventions for new tests:
 
-When adding tests, prefer `pytest.approx` over exact float equality for any
-conversion that goes through more than one multiplication.
+- Prefer `pytest.approx` over exact float equality for any conversion that
+  goes through more than one multiplication.
+- New custom-unit-file fixtures live in `unit_parser/test_files/`. Use the
+  `get_cwd()` helper for paths.
+- Reach into `_`-prefixed methods on `UnitParser` only from tests; that's the
+  documented escape hatch for white-box checks (signature exponents, dimension
+  count, etc.).
