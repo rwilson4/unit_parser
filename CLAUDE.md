@@ -133,17 +133,19 @@ Two line forms:
 
 These are not bugs in the parser — they're choices in `units.txt`:
 
-- `teaspoon: 0.3333333 tablespoons` — should be exactly 1/3. Consider allowing
-  rational expressions in the quantity form, or just use more digits.
-- `year: 365 days` — uses the common-year convention, not Julian (365.25).
+- `teaspoon: 1/3 tablespoon` — exact rational expression is now used.
+- `year: 365 day` — uses the common-year convention, not Julian (365.25).
   Document the choice or change it.
 - `degF: 0.5555555555555 degC` — temperature **differences** only. No offset
   is supported anywhere in the code, so converting an absolute temperature
   through this unit will produce nonsense. Document this loudly, or extend
   `_UnitSpec` with an offset and teach `convert` to refuse mixing absolute and
   relative temperatures.
-- Aliases like `seconds: 1 second` are how plurals/abbreviations work — there
-  is no built-in plural handling.
+- Regular plurals (`seconds`, `meters`, …) are auto-registered in `__init__`
+  after `_parse_unit_file` runs: for every unit name that doesn't end in `s`,
+  `name + 's'` is added pointing to the same `_UnitSpec`. Irregular plurals
+  (`feet`, `inches`) and abbreviations (`sec`, `ft`, …) remain explicit in
+  `units.txt`.
 
 ### Public API
 

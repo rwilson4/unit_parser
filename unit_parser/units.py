@@ -43,10 +43,10 @@ class UnitParser:
     preceding token, so 'second_second_meter_meter' is equivalent to
     'second_squared_meter_squared' but not 'second_meter_squared'.
 
-    Finally, 'second', 'seconds', and 'sec' are not automatically
-    treated as equivalent units, but the unit definition file can and
-    does create these as if they were aliases. For example, 'seconds'
-    is defined as '1 second'.
+    Finally, plural forms like 'seconds' and 'meters' are registered
+    automatically for every unit whose name does not already end in
+    's'. Irregular plurals ('feet', 'inches') and abbreviations
+    ('sec', 'ft') are defined explicitly in the unit definition file.
 
     """
 
@@ -58,6 +58,9 @@ class UnitParser:
         else:
             unit_path = Path(__file__).parent / 'units' / 'units.txt'
             self._parse_unit_file(unit_path)
+        for name in list(self._units):
+            if not name.endswith('s') and name + 's' not in self._units:
+                self._units[name + 's'] = self._units[name]
 
     def _signature_and_quantity_for_unit(self, unit: str) -> _UnitSpec:
         """Parse unit specification.
