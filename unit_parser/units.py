@@ -3,6 +3,7 @@
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import overload
 
 
 @dataclass(frozen=True)
@@ -316,50 +317,47 @@ class UnitParser:
                             quantity=sq.quantity * this_quantity,
                         )
 
-    def convert(self, *args: str | float) -> float:
+    @overload
+    def convert(self, physical_quantity: str, desired_units: str, /) -> float: ...
+    @overload
+    def convert(self, quantity: float, units: str, desired_units: str, /) -> float: ...
+    def convert(
+        self,
+        a: str | float,
+        b: str,
+        c: str | None = None,
+        /,
+    ) -> float:
         """Convert from one unit to another.
 
-        This function can be used in two ways; see Usage.
+        Two call shapes are accepted:
 
-        Parameters
-        ----------
-        physical_quantity : str
-           String representing a physical quantity, like "5 feet"
-        desired_units : str
-           String corresponding to a unit specification, like "meters",
-           representing the desired units.
-        quantity : numeric
-           Used in conjunction with 'units'
-        units : string
-           String corresponding to a unit specification, used in
-           conjunction with 'quantity'.
+        - ``convert("5 feet", "meters")`` — parse the source quantity from a
+          single string.
+        - ``convert(5, "feet", "meters")`` — pass the numeric value and source
+          unit separately.
 
         Returns
         -------
-        quantity : float
-           The input quantity converted to the desired units.
+        float
+            The input quantity expressed in ``desired_units``.
 
-        Usage
-        -----
-        des_quantity = convert(physical_quantity, desired_units)
-        des_quantity = convert(quantity, units, desired_units)
-
-        To convert 5 feet into meters, do either of the following:
-         > convert('5 feet', 'meters')
-         > convert(5, 'feet', 'meters')
+        Raises
+        ------
+        ValueError
+            If the source and destination units have incompatible signatures,
+            or if the two-argument form is called with a non-string source.
 
         """
-        if len(args) == 2:
-            quantity, units = self._parse_physical_quantity(str(args[0]))
-            desired_units = str(args[1])
-        elif len(args) == 3:
-            quantity = float(args[0])
-            units = str(args[1])
-            desired_units = str(args[2])
+        if c is None:
+            if not isinstance(a, str):
+                raise ValueError('Two-argument form requires a string like "5 feet"')
+            quantity, units = self._parse_physical_quantity(a)
+            desired_units = b
         else:
-            raise ValueError(
-                'Function must be called with 2 or 3 arguments; see documentation'
-            )
+            quantity = float(a)
+            units = b
+            desired_units = c
 
         given_sq = self._signature_and_quantity_for_unit(units)
         given_sig = given_sq.signature

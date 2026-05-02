@@ -191,14 +191,14 @@ def test_invalid_unit_spec_negative_quantity():
 
 def test_invalid_num_args():
     up = UnitParser()
-    with pytest.raises(ValueError):
-        up.convert(5, 'feet', 'to', 'meters')
+    with pytest.raises(TypeError):
+        up.convert(5, 'feet', 'to', 'meters')  # type: ignore[call-overload]
 
 
 def test_invalid_convert_args():
     up = UnitParser()
     with pytest.raises(ValueError):
-        up.convert('cat', 'feet', 'meters')
+        up.convert('cat', 'feet', 'meters')  # type: ignore[call-overload]
 
 
 def test_command_line_convert():
@@ -213,3 +213,14 @@ def test_command_line_convert_with_to():
     with patch.object(sys, 'argv', testargs):
         ans = convert_main()
         assert ans == pytest.approx(60)
+
+
+def test_command_line_convert_invalid_filler():
+    """CLI should reject a filler word other than 'to' instead of silently
+    dropping arguments.
+
+    """
+    testargs = ['convert', '5', 'feet', 'banana', 'inches']
+    with patch.object(sys, 'argv', testargs):
+        with pytest.raises(SystemExit):
+            convert_main()
