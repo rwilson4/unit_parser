@@ -26,8 +26,11 @@
 # quantity of 1. Other units are defined relative to
 # these "unit primitives". For example, second is defined
 # as that unit having signature [0 0 1 0 0 0] and quantity 1,
-# (which is admittedly hard to grok), but then minutes are
-# defined simply and intuitively as 60 seconds.
+# (which is admittedly hard to grok), but then minute is
+# defined simply and intuitively as 60 second.
+#
+# Regular plurals (seconds, meters, …) are registered automatically
+# by the parser. Only irregular plurals and abbreviations appear here.
 
 #### Dimensionless units ####
 unitless: [0 0 0 0 0 0]
@@ -39,87 +42,70 @@ nano: 0.001 micro
 
 #### Time units ####
 second: [0 0 1 0 0 0]
-seconds: 1 second
 sec: 1 second
 
-minute: 60 seconds
-minutes: 1 minute
+minute: 60 second
 min: 1 minute
 
-hour: 60 minutes
-hours: 1 hour
+hour: 60 minute
 hr: 1 hour
 
-day: 24 hours
-days: 1 day
-# Source: 
-siderealDay: 86164.0916 seconds
+day: 24 hour
+# Source:
+siderealDay: 86164.0916 second
 
-week: 7 days
-weeks: 1 week
+week: 7 day
 
-fortnight: 2 weeks
-fortnights: 1 fortnight
+fortnight: 2 week
 
-year: 365 days
-years: 1 year
+year: 365 day
 
 ##### Length units #####
 meter: [1 0 0 0 0 0]
-meters: 1 meter
 m: 1 meter
 
 kilometer: 1 kilo_meter
-kilometers: 1 kilometer
 km: 1 kilometer
 
 centimeter: 1 centi_meter
-centimeters: 1 centimeter
 cm: 1 centimeter
 
 millimeter: 1 milli_meter
-millimeters: 1 millimeter
 mm: 1 millimeter
 
 # Source:
 # https://en.wikipedia.org/wiki/Foot_(unit)#International_foot
-foot: 0.3048 meters
+foot: 0.3048 meter
 feet: 1 foot
 ft: 1 foot
 
 # Source:
 # https://en.wikipedia.org/wiki/Yard
-yard: 0.9144 meters
-yards: 1 yard
+yard: 0.9144 meter
 
 # Source:
 # https://en.wikipedia.org/wiki/Inch
-inch: 2.54 centimeters
+inch: 2.54 centimeter
 inches: 1 inch
 
 # Source:
 # https://en.wikipedia.org/wiki/Mile
-mile: 1609.344 meters
-miles: 1 mile
+mile: 1609.344 meter
 
 # Source:
 # https://en.wikipedia.org/wiki/Mile#Nautical_mile
-nauticalMile: 1852 meters
-nauticalMiles: 1 nauticalMile
+nauticalMile: 1852 meter
 nmi: 1 nauticalMile
 
 # Source:
 # https://en.wikipedia.org/wiki/Light-second
-lightSecond: 299792458 meters
-lightSeconds: 1 lightSecond
-lightDay: 86400 lightSeconds
+lightSecond: 299792458 meter
+lightDay: 86400 lightSecond
 lightYear: 365.25 lightDay
-lightYears: 1 lightYear
-parsec: 3.26163344 lightYears
+parsec: 3.26163344 lightYear
 
 #### Mass units ####
 kilogram: [0 1 0 0 0 0]
-kilograms: 1 kilogram
 kg: 1 kilogram
 gram: 0.001 kilogram
 
@@ -130,41 +116,30 @@ lbm: 0.45359237 kg
 
 #### Volume units ####
 milliliter: 1 centimeter_cubed
-milliliters: 1 milliliter
 ml: 1 milliliter
 
-liter: 1000 milliliters
-liters: 1 liter
+liter: 1000 milliliter
 
-gallon: 231 inches_cubed
-gallons: 1 gallon
+gallon: 231 inch_cubed
 gal: 1 gallon
 
-quart: 0.25 gallons
-quarts: 1 quart
+quart: 0.25 gallon
 
-pint: 0.5 quarts
-pints: 1 pint
+pint: 0.5 quart
 
-cup: 0.5 pints
-cups: 1 cup
+cup: 0.5 pint
 
-fluidOunce: 0.125 cups
-fluidOunces: 1 fluidOunce
+fluidOunce: 0.125 cup
 
-tablespoon: 0.5 fluidOunces
-tablespoons: 1 tablespoon
+tablespoon: 0.5 fluidOunce
 tbsp: 1 tablespoon
 
-teaspoon: 1/3 tablespoons
-teaspoons: 1 teaspoon
+teaspoon: 1/3 tablespoon
 tsp: 1 teaspoon
 
 #### Angular units ####
 radian: [0 0 0 1 0 0]
-radians: 1 radian
 degree: 0.01745329252 radian
-degrees: 1 degree
 deg: 1 degree
 
 #### Temperature units ####
@@ -176,19 +151,16 @@ mph: 1 mile_per_hour
 
 #### Force units ####
 newton: 1 kilogram_meter_per_second_squared
-newtons: 1 newton
 
-# Source
+# Source:
 # https://en.wikipedia.org/wiki/Pound_(force)
-lbf: 9.80665 lbm_meters_per_second_squared
+lbf: 9.80665 lbm_meter_per_second_squared
 pound: 1 lbf
-pounds: 1 pound
 
 # Ounces of force
 # Source:
 # https://en.wikipedia.org/wiki/Ounce#Ounce-force
 ounce: 0.0625 lbf
-ounces: 1 ounce
 oz: 1 ounce
 
 # slug is a unit of mass, but it is
@@ -199,12 +171,9 @@ slug: 1 lbf_second_squared_per_foot
 
 #### Energy units ####
 joule: 1 newton_meter
-joules: 1 joule
 calorie: 4.184 joule
-calories: 1 calorie
 
 watt: 1 joule_per_second
-watts: 1 watt
 
 #### Pressure units ####
 pascal: 1 newton_per_meter_squared
