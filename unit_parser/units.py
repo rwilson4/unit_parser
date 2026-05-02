@@ -1,15 +1,16 @@
-# pyre-strict
 """Unit parsing and conversion."""
+
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import overload
 
 
 @dataclass(frozen=True)
 class _UnitSpec:
     """Internal representation of a unit's dimensional signature and quantity."""
 
-    signature: list[int]
+    signature: tuple[int, ...]
     quantity: float
 
 
@@ -54,7 +55,7 @@ class UnitParser:
         if unit_definitions is not None:
             self._parse_unit_file(unit_definitions)
         else:
-            unit_path = Path(__file__).parent / "units" / "units.txt"
+            unit_path = Path(__file__).parent / 'units' / 'units.txt'
             self._parse_unit_file(unit_path)
 
     def _signature_and_quantity_for_unit(self, unit: str) -> _UnitSpec:
@@ -73,10 +74,7 @@ class UnitParser:
 
         """
         if unit in self._units:
-            return _UnitSpec(
-                signature=list(self._units[unit].signature),
-                quantity=self._units[unit].quantity,
-            )
+            return self._units[unit]
 
         # Parse string
         tokens = unit.split('_')
@@ -139,7 +137,7 @@ class UnitParser:
             else:
                 raise ValueError(f'Unit not recognized: {token}')
 
-        return _UnitSpec(signature=signature, quantity=quantity)
+        return _UnitSpec(signature=tuple(signature), quantity=quantity)
 
     def _parse_physical_quantity(self, physical_quantity: str) -> tuple[float, str]:
         """Parse physical quantity string.
@@ -221,9 +219,7 @@ class UnitParser:
         # notation. Examples:
         # [1,1]
         # [ 1 , 1, 2.3 ]
-        vector_re = (
-            r'\[\s*((\s*' + double_re + r'\s*,?)*\s*(' + double_re + r'))\s*\]'
-        )
+        vector_re = r'\[\s*((\s*' + double_re + r'\s*,?)*\s*(' + double_re + r'))\s*\]'
 
         # This regular expression represents a physical quantity. Examples:
         #   1 day
@@ -245,13 +241,17 @@ class UnitParser:
         #  token.key = 'minute'
         #  token.value = '60 seconds'
         key_value_re = (
-            r'^\s*(' + unit_re + r')\s*:\s*('
-            + vector_re + r'|' + physical_quantity_re
+            r'^\s*('
+            + unit_re
+            + r')\s*:\s*('
+            + vector_re
+            + r'|'
+            + physical_quantity_re
             + r')\s*(#.*)?$'
         )
 
         ## Parse file
-        with open(file, 'r') as f:
+        with open(file) as f:
             line_number = 0
             for line in f:
                 line_number += 1
@@ -287,12 +287,11 @@ class UnitParser:
                     sig_strs = re.compile(r',|\s+,?\s*').split(
                         defined_by_signature.group(1)
                     )
-                    sig = [int(s) for s in sig_strs]
+                    sig = tuple(int(s) for s in sig_strs)
 
-                    sig_len = len(sig)
                     if self._sig_len == -1:
-                        self._sig_len = sig_len
-                    elif sig_len != self._sig_len:
+                        self._sig_len = len(sig)
+                    elif len(sig) != self._sig_len:
                         raise ValueError(
                             f'Syntax error on line: {line_number}:'
                             f' Signature length inconsistent with previous units.'
@@ -314,50 +313,47 @@ class UnitParser:
                             quantity=sq.quantity * this_quantity,
                         )
 
-    def convert(self, *args: str | float) -> float:
+    @overload
+    def convert(self, physical_quantity: str, desired_units: str, /) -> float: ...
+    @overload
+    def convert(self, quantity: float, units: str, desired_units: str, /) -> float: ...
+    def convert(
+        self,
+        a: str | float,
+        b: str,
+        c: str | None = None,
+        /,
+    ) -> float:
         """Convert from one unit to another.
 
-        This function can be used in two ways; see Usage.
+        Two call shapes are accepted:
 
-        Parameters
-        ----------
-        physical_quantity : str
-           String representing a physical quantity, like "5 feet"
-        desired_units : str
-           String corresponding to a unit specification, like "meters",
-           representing the desired units.
-        quantity : numeric
-           Used in conjunction with 'units'
-        units : string
-           String corresponding to a unit specification, used in
-           conjunction with 'quantity'.
+        - ``convert("5 feet", "meters")`` — parse the source quantity from a
+          single string.
+        - ``convert(5, "feet", "meters")`` — pass the numeric value and source
+          unit separately.
 
         Returns
         -------
-        quantity : float
-           The input quantity converted to the desired units.
+        float
+            The input quantity expressed in ``desired_units``.
 
-        Usage
-        -----
-        des_quantity = convert(physical_quantity, desired_units)
-        des_quantity = convert(quantity, units, desired_units)
-
-        To convert 5 feet into meters, do either of the following:
-         > convert('5 feet', 'meters')
-         > convert(5, 'feet', 'meters')
+        Raises
+        ------
+        ValueError
+            If the source and destination units have incompatible signatures,
+            or if the two-argument form is called with a non-string source.
 
         """
-        if len(args) == 2:
-            quantity, units = self._parse_physical_quantity(str(args[0]))
-            desired_units = str(args[1])
-        elif len(args) == 3:
-            quantity = float(args[0])
-            units = str(args[1])
-            desired_units = str(args[2])
+        if c is None:
+            if not isinstance(a, str):
+                raise ValueError('Two-argument form requires a string like "5 feet"')
+            quantity, units = self._parse_physical_quantity(a)
+            desired_units = b
         else:
-            raise ValueError(
-                'Function must be called with 2 or 3 arguments; see documentation'
-            )
+            quantity = float(a)
+            units = b
+            desired_units = c
 
         given_sq = self._signature_and_quantity_for_unit(units)
         given_sig = given_sq.signature
@@ -366,7 +362,7 @@ class UnitParser:
         des_sig = des_sq.signature
         des_quant = des_sq.quantity
 
-        for fi, ti in zip(given_sig, des_sig):
+        for fi, ti in zip(given_sig, des_sig, strict=True):
             if fi != ti:
                 raise ValueError('Units not compatible.')
 
@@ -585,7 +581,9 @@ class UnitParser:
         denom_sig = denom_sq.signature
         denom_unit_quant = denom_sq.quantity
 
-        quotient_quantity = (num_quant * num_unit_quant) / (denom_quant * denom_unit_quant)
+        quotient_quantity = (num_quant * num_unit_quant) / (
+            denom_quant * denom_unit_quant
+        )
         quotient_signature = [num_sig[i] - denom_sig[i] for i in range(self._sig_len)]
 
         quot_sq = self._signature_and_quantity_for_unit(quotient_units)
