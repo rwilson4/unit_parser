@@ -40,16 +40,26 @@ The codebase predates current Python packaging conventions and is mid-cleanup.
 Treat the following as the **target state** when making changes — prefer to
 move the code toward this state rather than entrench what exists today.
 
-| Area              | Current                          | Target                           |
-| ----------------- | -------------------------------- | -------------------------------- |
-| Python version    | Implicit, tested on 2.7 / 3.6 in `.travis.yml` | 3.11+ (declare `requires-python` in `pyproject.toml`) |
-| Dependency mgmt   | empty `requirements.txt`         | `uv` with lockfile; deps in `pyproject.toml` |
-| Linting           | none                             | `ruff` (lint + format)           |
-| Type checking     | `# pyre-strict` headers (unused) | `mypy --strict`; remove pyre headers |
-| CI                | `.travis.yml` (defunct)          | GitHub Actions: lint + type-check + test on 3.11/3.12/3.13 |
-| Packaging         | `setup.py` + `MANIFEST.in` mix   | PEP 621 only (`pyproject.toml`); drop `MANIFEST.in` and empty `requirements.txt` |
-| Tests             | flat module                      | move to `tests/`; add coverage threshold |
-| Class naming      | recently renamed `unit_parser` → `UnitParser` | finish the rename — README still uses the old name |
+| Area              | Status                           |
+| ----------------- | -------------------------------- |
+| Python version    | Done — `requires-python = ">=3.11"` in `pyproject.toml` |
+| Dependency mgmt   | Done — `uv` + `uv.lock`; dev deps in `[dependency-groups]` |
+| Linting           | Done — `ruff` (lint + format), single-quote style |
+| Type checking     | Done — `mypy --strict`; pyre headers removed |
+| CI                | Done — GitHub Actions on 3.11/3.12/3.13 (`.github/workflows/ci.yml`) |
+| Packaging         | Done — PEP 621 only; `MANIFEST.in` and `requirements.txt` deleted |
+| Tests             | TODO — move to `tests/`; add coverage threshold |
+| Class naming      | TODO — `README.md` still uses the old lowercase `unit_parser` name |
+
+Local commands:
+
+```bash
+uv sync                # install dev deps + editable install
+uv run pytest          # tests
+uv run ruff check .    # lint
+uv run ruff format .   # format
+uv run mypy            # type-check
+```
 
 Don't introduce a runtime dependency just to satisfy a lint rule; the
 zero-dependency property is a feature.

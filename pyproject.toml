@@ -7,6 +7,7 @@ name = "unit_parser"
 version = "0.2"
 description = "Unit Parser and Conversions"
 readme = "README.md"
+requires-python = ">=3.11"
 authors = [
     {name = "Bob Wilson", email = "bob@convexanalytics.com"},
 ]
@@ -19,8 +20,42 @@ repository = "https://github.com/rwilson4/unit_parser"
 [project.scripts]
 convert = "unit_parser.convert:main"
 
+[dependency-groups]
+dev = [
+    "mypy>=1.11",
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+]
+
 [tool.setuptools.packages.find]
 where = ["."]
 
 [tool.setuptools.package-data]
 unit_parser = ["units/*.txt"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["unit_parser"]
+
+[[tool.mypy.overrides]]
+module = "unit_parser.test_units"
+disallow_untyped_defs = false

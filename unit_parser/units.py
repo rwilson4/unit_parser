@@ -1,5 +1,5 @@
-# pyre-strict
 """Unit parsing and conversion."""
+
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -54,7 +54,7 @@ class UnitParser:
         if unit_definitions is not None:
             self._parse_unit_file(unit_definitions)
         else:
-            unit_path = Path(__file__).parent / "units" / "units.txt"
+            unit_path = Path(__file__).parent / 'units' / 'units.txt'
             self._parse_unit_file(unit_path)
 
     def _signature_and_quantity_for_unit(self, unit: str) -> _UnitSpec:
@@ -221,9 +221,7 @@ class UnitParser:
         # notation. Examples:
         # [1,1]
         # [ 1 , 1, 2.3 ]
-        vector_re = (
-            r'\[\s*((\s*' + double_re + r'\s*,?)*\s*(' + double_re + r'))\s*\]'
-        )
+        vector_re = r'\[\s*((\s*' + double_re + r'\s*,?)*\s*(' + double_re + r'))\s*\]'
 
         # This regular expression represents a physical quantity. Examples:
         #   1 day
@@ -245,13 +243,17 @@ class UnitParser:
         #  token.key = 'minute'
         #  token.value = '60 seconds'
         key_value_re = (
-            r'^\s*(' + unit_re + r')\s*:\s*('
-            + vector_re + r'|' + physical_quantity_re
+            r'^\s*('
+            + unit_re
+            + r')\s*:\s*('
+            + vector_re
+            + r'|'
+            + physical_quantity_re
             + r')\s*(#.*)?$'
         )
 
         ## Parse file
-        with open(file, 'r') as f:
+        with open(file) as f:
             line_number = 0
             for line in f:
                 line_number += 1
@@ -366,7 +368,7 @@ class UnitParser:
         des_sig = des_sq.signature
         des_quant = des_sq.quantity
 
-        for fi, ti in zip(given_sig, des_sig):
+        for fi, ti in zip(given_sig, des_sig, strict=True):
             if fi != ti:
                 raise ValueError('Units not compatible.')
 
@@ -585,7 +587,9 @@ class UnitParser:
         denom_sig = denom_sq.signature
         denom_unit_quant = denom_sq.quantity
 
-        quotient_quantity = (num_quant * num_unit_quant) / (denom_quant * denom_unit_quant)
+        quotient_quantity = (num_quant * num_unit_quant) / (
+            denom_quant * denom_unit_quant
+        )
         quotient_signature = [num_sig[i] - denom_sig[i] for i in range(self._sig_len)]
 
         quot_sq = self._signature_and_quantity_for_unit(quotient_units)

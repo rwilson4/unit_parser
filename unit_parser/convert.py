@@ -1,10 +1,11 @@
-# pyre-strict
 """Command-line entry point for unit conversion."""
+
 from .units import UnitParser
 
 
 def main() -> float:
     import argparse
+
     parser = argparse.ArgumentParser(description='Unit conversions')
     parser.add_argument('quantity', type=float, help='Given quantity')
     parser.add_argument('given_units', type=str, help='Given units')
