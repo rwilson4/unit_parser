@@ -49,7 +49,7 @@ move the code toward this state rather than entrench what exists today.
 | CI                | Done — GitHub Actions on 3.11/3.12/3.13 (`.github/workflows/ci.yml`) |
 | Packaging         | Done — PEP 621 only; `MANIFEST.in` and `requirements.txt` deleted |
 | Tests             | TODO — move to `tests/`; add coverage threshold |
-| Class naming      | TODO — `README.md` still uses the old lowercase `unit_parser` name |
+| Class naming      | Done — `README.md` updated to `UnitParser`; CI badge points at GitHub Actions |
 
 Local commands:
 

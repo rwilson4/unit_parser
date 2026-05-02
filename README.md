@@ -12,16 +12,8 @@
 <tr>
   <td>Build Status</td>
   <td>
-    <a href="https://travis-ci.org/rwilson4/unit_parser">
-    <img src="https://travis-ci.org/rwilson4/unit_parser.svg?branch=master&label=Travis%20CI" alt="travis build status" />
-    </a>
-  </td>
-</tr>
-<tr>
-  <td>Code Coverage</td>
-  <td>
-    <a href="https://codecov.io/gh/rwilson4/unit_parser">
-    <img src="https://codecov.io/gh/rwilson4/unit_parser/branch/master/graph/badge.svg" />
+    <a href="https://github.com/rwilson4/unit_parser/actions/workflows/ci.yml">
+    <img src="https://github.com/rwilson4/unit_parser/actions/workflows/ci.yml/badge.svg" alt="CI status" />
     </a>
   </td>
 </tr>
@@ -42,8 +34,8 @@ operations.
 The parsing function does double duty as a method for converting
 between units and is thus called "convert".
 ```sh
-  >>> from unit_parser import unit_parser
-  >>> up = unit_parser()
+  >>> from unit_parser import UnitParser
+  >>> up = UnitParser()
   >>> up.convert("3 gallons", "liters")
     11.356235352
 ```
@@ -56,10 +48,10 @@ works as well:
     11.356235352
 ```
 Note the unit parser must be initialized before being used by calling
-the unit_parser() function without any arguments. That uses the
+the `UnitParser()` constructor without any arguments. That uses the
 built-in unit specification file to define the units recognized by
 this library. If a unit is not supported, you can create your own unit
-specification file and provide the file name to this function.
+specification file and pass its path to the constructor.
 
 The next thing we see is that physical quantities and units are
 represented by strings. I find this to be the most intuitive way of
@@ -77,8 +69,8 @@ gallons". The code that is parsing this input might call:
 
 ```sh
   >>> import json
-  >>> from unit_parser import unit_parser
-  >>> up = unit_parser()
+  >>> from unit_parser import UnitParser
+  >>> up = UnitParser()
   >>> config = json.load(open('example.json', 'r'))
   >>> water_volume = config['water_volume']
   >>> water_volume_liters = up.convert(water_volume, "liters")
@@ -123,8 +115,8 @@ takes three arguments: two physical quantities, and the desired units
 of the answer.
 
 ```sh
-  >>> from unit_parser import unit_parser
-  >>> up = unit_parser()
+  >>> from unit_parser import UnitParser
+  >>> up = UnitParser()
   >>> up.add("5 meters", "2 feet", "yards")
     6.13473315836
   >>> up.subtract("5 meters", "2 feet", "yards")
