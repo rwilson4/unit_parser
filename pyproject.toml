@@ -30,9 +30,20 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
+include = ["unit_parser*"]
 
 [tool.setuptools.package-data]
 unit_parser = ["units/*.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["unit_parser"]
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
 
 [tool.ruff]
 line-length = 88
@@ -54,8 +65,8 @@ quote-style = "single"
 [tool.mypy]
 python_version = "3.11"
 strict = true
-files = ["unit_parser"]
+files = ["unit_parser", "tests"]
 
 [[tool.mypy.overrides]]
-module = "unit_parser.test_units"
+module = "tests.*"
 disallow_untyped_defs = false

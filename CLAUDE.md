@@ -19,17 +19,17 @@ can accept it.
 
 ```bash
 # Run all tests
-pytest unit_parser/test_units.py
+uv run pytest
 
 # Run a single test
-pytest unit_parser/test_units.py::test_feet_to_meters
+uv run pytest tests/test_units.py::test_feet_to_meters
 
-# Install in editable mode
-pip install -e .
+# Install dev environment
+uv sync
 
 # CLI
-convert 5 feet meters
-convert 5 feet to inches   # the "to" filler word is accepted
+uv run convert 5 feet meters
+uv run convert 5 feet to inches   # the "to" filler word is accepted
 ```
 
 There is no build step and no runtime dependencies.
@@ -48,7 +48,7 @@ move the code toward this state rather than entrench what exists today.
 | Type checking     | Done — `mypy --strict`; pyre headers removed |
 | CI                | Done — GitHub Actions on 3.11/3.12/3.13 (`.github/workflows/ci.yml`) |
 | Packaging         | Done — PEP 621 only; `MANIFEST.in` and `requirements.txt` deleted |
-| Tests             | TODO — move to `tests/`; add coverage threshold |
+| Tests             | Done — `tests/` directory; coverage threshold 95 % |
 | Class naming      | Done — `README.md` updated to `UnitParser`; CI badge points at GitHub Actions |
 
 Local commands:
@@ -176,11 +176,10 @@ Registered as the `convert` console script via `pyproject.toml`. Accepts:
 convert <value> <from_unit> [to] <to_unit>
 ```
 
-Implementation note: when more than one trailing positional is supplied, the
-code currently picks `args.desired_units[1]` and discards everything else
-without validating that the first filler word is `"to"`. `convert 5 feet
-banana meters` parses as `5 feet → meters` with no warning. A proper rewrite
-should explicitly accept an optional `to` literal.
+The CLI accepts either two trailing positionals (`<from> <to>`) or three
+where the middle one is the literal word `"to"`. Anything else (a stray
+filler word, an extra argument) is rejected via `argparse.ArgumentParser.error`,
+which prints the usage and exits 2.
 
 ## Conventions
 

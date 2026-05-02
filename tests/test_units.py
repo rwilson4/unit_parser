@@ -6,8 +6,8 @@ from unittest.mock import patch
 
 import pytest
 
-from .convert import main as convert_main
-from .units import UnitParser
+from unit_parser.convert import main as convert_main
+from unit_parser.units import UnitParser
 
 
 def get_cwd() -> str:
